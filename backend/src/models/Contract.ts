@@ -2,7 +2,6 @@ import { Schema, model, Document, Types, HydratedDocument } from "mongoose";
 
 /**
  * Contract Management Module
- * Owner: Developer 2
  * Covers: Vendor Contracts, Renewal Dates, Contract Expiry,
  * Attachments, Compliance Documents
  */

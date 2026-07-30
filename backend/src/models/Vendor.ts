@@ -2,7 +2,6 @@ import { Schema, model, Document, Types, HydratedDocument } from "mongoose";
 
 /**
  * Vendor Management Module
- * Owner: Developer 2
  * Covers: Vendor Profiles, Company Information, Tax Information,
  * Certifications, Bank Accounts, Vendor Ratings, Vendor Categories
  */

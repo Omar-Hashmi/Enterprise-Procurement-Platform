@@ -2,7 +2,6 @@ import { Schema, model, Document, Types, HydratedDocument } from "mongoose";
 
 /**
  * Inventory Integration Module
- * Owner: Developer 2
  * Covers: Goods Received, Pending Deliveries, Warehouse Allocation, Stock Updates
  */
 

@@ -2,8 +2,6 @@ import { Schema, model, Document, Types } from "mongoose";
 
 /**
  * Notification Model
- * Primary owner: Developer 1 (Notifications via Socket.IO)
- * Included here because it's a shared dependency — Developer 2's modules
  * (RFQ emails, Contract renewal reminders, Budget alerts, Email Queue)
  * all write to this collection to trigger in-app + email notifications.
  */

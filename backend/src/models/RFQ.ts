@@ -2,7 +2,6 @@ import { Schema, model, Document, Types } from "mongoose";
 
 /**
  * RFQ (Request for Quotation) Module
- * Owner: Developer 2
  * Covers: Create RFQ, Invite Vendors, Submit Quotations,
  * Price Comparison, Technical Evaluation, Vendor Selection
  */

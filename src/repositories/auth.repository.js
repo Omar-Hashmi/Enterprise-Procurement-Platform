@@ -12,6 +12,7 @@ const register = async (userData) => {
     }
 
     const user = await User.create(userData);
+    user.password = undefined;
 
     return user;
 };

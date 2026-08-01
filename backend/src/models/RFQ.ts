@@ -33,6 +33,8 @@ export interface IQuotationItem {
 }
 
 export interface IQuotation {
+  _id: Types.ObjectId;
+
   vendor: Types.ObjectId;
   status: QuotationStatus;
   items: IQuotationItem[];

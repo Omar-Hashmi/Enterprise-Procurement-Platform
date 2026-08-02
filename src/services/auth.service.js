@@ -28,6 +28,11 @@ const login = async (userData) => {
         return "Invalid password";
     }
 
+    // Check if user account is active
+    if (!user.isActive) {
+        return "Your account is inactive. Please contact the administrator.";
+    }
+
     const token = jwt.sign(
         {
             userId: user._id,

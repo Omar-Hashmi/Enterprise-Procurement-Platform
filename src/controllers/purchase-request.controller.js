@@ -37,7 +37,10 @@ const getAllPurchaseRequests = async (req, res) => {
 const getPurchaseRequestById = async (req, res) => {
     try {
         const purchaseRequest =
-            await purchaseRequestService.getPurchaseRequestById(req.params.id);
+            await purchaseRequestService.getPurchaseRequestById(
+                req.params.id,
+                req.user
+            );
 
         return res.status(200).json(purchaseRequest);
     } catch (error) {
@@ -71,7 +74,8 @@ const updatePurchaseRequest = async (req, res) => {
         const purchaseRequest =
             await purchaseRequestService.updatePurchaseRequest(
                 req.params.id,
-                req.body
+                req.body,
+                req.user
             );
 
         return res.status(200).json({
@@ -88,7 +92,10 @@ const updatePurchaseRequest = async (req, res) => {
 const cancelPurchaseRequest = async (req, res) => {
     try {
         const purchaseRequest =
-            await purchaseRequestService.cancelPurchaseRequest(req.params.id);
+            await purchaseRequestService.cancelPurchaseRequest(
+                req.params.id,
+                req.user
+            );
 
         return res.status(200).json({
             message: "Purchase request cancelled successfully",
@@ -107,7 +114,8 @@ const uploadAttachment = async (req, res) => {
         const purchaseRequest =
             await purchaseRequestService.uploadAttachment(
                 req.params.id,
-                req.file
+                req.file,
+                req.user
             );
 
         return res.status(200).json({

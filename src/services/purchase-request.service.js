@@ -9,7 +9,7 @@ const getAllPurchaseRequests = async () => {
     return await purchaseRequestRepository.getAllPurchaseRequests();
 };
 
-const getPurchaseRequestById = async (id) => {
+const getPurchaseRequestById = async (id, user) => {
     if (!mongoose.Types.ObjectId.isValid(id)) {
         const error = new Error("Invalid purchase request ID");
         error.statusCode = 400;
@@ -22,6 +22,18 @@ const getPurchaseRequestById = async (id) => {
     if (!purchaseRequest) {
         const error = new Error("Purchase request not found");
         error.statusCode = 404;
+        throw error;
+    }
+
+    // ⭐ Ownership Validation
+    if (
+        user.role !== "admin" &&
+        purchaseRequest.requestedBy._id.toString() !== user.userId
+    ) {
+        const error = new Error(
+            "You are not authorized to access this purchase request"
+        );
+        error.statusCode = 403;
         throw error;
     }
 
@@ -48,72 +60,44 @@ const getPurchaseRequestStatus = async (id) => {
     return purchaseRequest;
 };
 
-const updatePurchaseRequest = async (id, requestData) => {
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        const error = new Error("Invalid purchase request ID");
-        error.statusCode = 400;
-        throw error;
-    }
+const updatePurchaseRequest = async (id, requestData, user) => {
+    const existingRequest = await getPurchaseRequestById(id, user);
 
     const purchaseRequest =
         await purchaseRequestRepository.updatePurchaseRequest(
-            id,
+            existingRequest._id,
             requestData
         );
-
-    if (!purchaseRequest) {
-        const error = new Error("Purchase request not found");
-        error.statusCode = 404;
-        throw error;
-    }
 
     return purchaseRequest;
 };
 
-const cancelPurchaseRequest = async (id) => {
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        const error = new Error("Invalid purchase request ID");
-        error.statusCode = 400;
-        throw error;
-    }
+const cancelPurchaseRequest = async (id, user) => {
+    const existingRequest = await getPurchaseRequestById(id, user);
 
     const purchaseRequest =
-        await purchaseRequestRepository.cancelPurchaseRequest(id);
-
-    if (!purchaseRequest) {
-        const error = new Error("Purchase request not found");
-        error.statusCode = 404;
-        throw error;
-    }
+        await purchaseRequestRepository.cancelPurchaseRequest(
+            existingRequest._id
+        );
 
     return purchaseRequest;
 };
 
 // ⭐ Upload Attachment
-const uploadAttachment = async (id, file) => {
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        const error = new Error("Invalid purchase request ID");
-        error.statusCode = 400;
-        throw error;
-    }
-
+const uploadAttachment = async (id, file, user) => {
     if (!file) {
         const error = new Error("Attachment is required");
         error.statusCode = 400;
         throw error;
     }
 
+    const existingRequest = await getPurchaseRequestById(id, user);
+
     const purchaseRequest =
         await purchaseRequestRepository.uploadAttachment(
-            id,
+            existingRequest._id,
             file.path
         );
-
-    if (!purchaseRequest) {
-        const error = new Error("Purchase request not found");
-        error.statusCode = 404;
-        throw error;
-    }
 
     return purchaseRequest;
 };

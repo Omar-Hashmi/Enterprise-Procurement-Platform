@@ -1,6 +1,7 @@
 const express = require("express");
 const multer = require("multer");
 
+const approvalRoutes = require("./routes/approval.routes");
 const authRoutes = require("./routes/auth.routes");
 const userRoutes = require("./routes/user.routes");
 const purchaseRequestRoutes = require("./routes/purchase-request.routes");
@@ -23,6 +24,7 @@ app.use("/api/purchase-requests", purchaseRequestRoutes);
 app.use("/api/vendors", vendorRoutes);
 app.use("/api/quotations", quotationRoutes);
 app.use("/api/purchase-orders", purchaseOrderRoutes);
+app.use("/api/approvals", approvalRoutes);
 
 // Global Error Handler
 app.use((err, req, res, next) => {

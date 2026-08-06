@@ -4,6 +4,7 @@ const multer = require("multer");
 const authRoutes = require("./routes/auth.routes");
 const userRoutes = require("./routes/user.routes");
 const purchaseRequestRoutes = require("./routes/purchase-request.routes");
+const vendorRoutes = require("./routes/vendor.routes");
 
 const app = express();
 
@@ -16,7 +17,9 @@ app.get("/", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/purchase-requests", purchaseRequestRoutes);
+app.use("/api/vendors", vendorRoutes);
 
+// Global Error Handler
 app.use((err, req, res, next) => {
     if (err instanceof multer.MulterError) {
         return res.status(400).json({

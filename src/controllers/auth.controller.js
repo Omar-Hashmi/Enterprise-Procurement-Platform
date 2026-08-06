@@ -1,17 +1,32 @@
 const authService = require("../services/auth.service");
 
 const register = async (req, res) => {
-    console.log(req.body);
+    try {
+        console.log("Register Body:", req.body);
 
-    const message = await authService.register(req.body);
+        const message = await authService.register(req.body);
 
-    res.send(message);
+        return res.send(message);
+    } catch (error) {
+        return res.status(error.statusCode || 500).json({
+            message: error.message,
+        });
+    }
 };
 
 const login = async (req, res) => {
-    const message = await authService.login(req.body);
+    try {
+        // Debugging
+        console.log("Login Body:", req.body);
 
-    res.send(message);
+        const message = await authService.login(req.body);
+
+        return res.send(message);
+    } catch (error) {
+        return res.status(error.statusCode || 500).json({
+            message: error.message,
+        });
+    }
 };
 
 const profile = (req, res) => {

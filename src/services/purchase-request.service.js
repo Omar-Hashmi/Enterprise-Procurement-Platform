@@ -28,6 +28,26 @@ const getPurchaseRequestById = async (id) => {
     return purchaseRequest;
 };
 
+// ⭐ Track Purchase Request Status
+const getPurchaseRequestStatus = async (id) => {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        const error = new Error("Invalid purchase request ID");
+        error.statusCode = 400;
+        throw error;
+    }
+
+    const purchaseRequest =
+        await purchaseRequestRepository.getPurchaseRequestStatus(id);
+
+    if (!purchaseRequest) {
+        const error = new Error("Purchase request not found");
+        error.statusCode = 404;
+        throw error;
+    }
+
+    return purchaseRequest;
+};
+
 const updatePurchaseRequest = async (id, requestData) => {
     if (!mongoose.Types.ObjectId.isValid(id)) {
         const error = new Error("Invalid purchase request ID");
@@ -36,7 +56,10 @@ const updatePurchaseRequest = async (id, requestData) => {
     }
 
     const purchaseRequest =
-        await purchaseRequestRepository.updatePurchaseRequest(id, requestData);
+        await purchaseRequestRepository.updatePurchaseRequest(
+            id,
+            requestData
+        );
 
     if (!purchaseRequest) {
         const error = new Error("Purchase request not found");
@@ -66,10 +89,41 @@ const cancelPurchaseRequest = async (id) => {
     return purchaseRequest;
 };
 
+// ⭐ Upload Attachment
+const uploadAttachment = async (id, file) => {
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+        const error = new Error("Invalid purchase request ID");
+        error.statusCode = 400;
+        throw error;
+    }
+
+    if (!file) {
+        const error = new Error("Attachment is required");
+        error.statusCode = 400;
+        throw error;
+    }
+
+    const purchaseRequest =
+        await purchaseRequestRepository.uploadAttachment(
+            id,
+            file.path
+        );
+
+    if (!purchaseRequest) {
+        const error = new Error("Purchase request not found");
+        error.statusCode = 404;
+        throw error;
+    }
+
+    return purchaseRequest;
+};
+
 module.exports = {
     createPurchaseRequest,
     getAllPurchaseRequests,
     getPurchaseRequestById,
+    getPurchaseRequestStatus,
     updatePurchaseRequest,
     cancelPurchaseRequest,
+    uploadAttachment,
 };

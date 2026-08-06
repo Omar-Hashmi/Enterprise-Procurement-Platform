@@ -61,28 +61,9 @@ const softDeleteUser = async (id) => {
     return user;
 };
 
-const activateUser = async (id) => {
-    if (!mongoose.Types.ObjectId.isValid(id)) {
-        const error = new Error("Invalid user ID");
-        error.statusCode = 400;
-        throw error;
-    }
-
-    const user = await userRepository.activateUser(id);
-
-    if (!user) {
-        const error = new Error("User not found");
-        error.statusCode =404;
-        throw error;
-    }
-
-    return user;
-};
-
 module.exports = {
     getAllUsers,
     getUserById,
     updateUser,
     softDeleteUser,
-    activateUser,
 };

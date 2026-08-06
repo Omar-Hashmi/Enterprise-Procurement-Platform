@@ -1,4 +1,5 @@
 const express = require("express");
+const multer = require("multer");
 
 const authRoutes = require("./routes/auth.routes");
 const userRoutes = require("./routes/user.routes");
@@ -15,5 +16,24 @@ app.get("/", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/purchase-requests", purchaseRequestRoutes);
+
+app.use((err, req, res, next) => {
+    if (err instanceof multer.MulterError) {
+        return res.status(400).json({
+            message: "File upload error",
+            error: err.code,
+            detail: err.message,
+        });
+    }
+
+    if (err) {
+        return res.status(400).json({
+            message: "Upload failed",
+            error: err.message,
+        });
+    }
+
+    next();
+});
 
 module.exports = app;

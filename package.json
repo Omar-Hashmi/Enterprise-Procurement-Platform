@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "node tests/workflow.test.js"
+    "test": "node tests/workflow.test.js && node tests/purchase-order.test.js"
   },
   "repository": {
     "type": "git",

@@ -29,6 +29,12 @@ const purchaseOrderSchema = new mongoose.Schema(
         expectedDeliveryDate: {
             type: Date,
             required: true,
+            // Expected delivery date for the PO
+        },
+        paymentTerms: {
+            type: String,
+            required: true,
+            // Payment terms description (e.g., Net 30, Advance)
         },
         remarks: {
             type: String,

@@ -36,8 +36,45 @@ const profile = (req, res) => {
     });
 };
 
+// Change Password
+const changePassword = async (req, res) => {
+    try {
+        const userId = req.user.userId; // from auth middleware
+        const { currentPassword, newPassword } = req.body;
+        const result = await authService.changePassword(userId, currentPassword, newPassword);
+        return res.json(result);
+    } catch (error) {
+        return res.status(error.statusCode || 500).json({ message: error.message });
+    }
+};
+
+// Password Reset Request
+const requestPasswordReset = async (req, res) => {
+    try {
+        const { email } = req.body;
+        const result = await authService.resetPasswordRequest(email);
+        return res.json(result);
+    } catch (error) {
+        return res.status(error.statusCode || 500).json({ message: error.message });
+    }
+};
+
+// Reset Password using token
+const resetPassword = async (req, res) => {
+    try {
+        const { token, newPassword } = req.body;
+        const result = await authService.resetPassword(token, newPassword);
+        return res.json(result);
+    } catch (error) {
+        return res.status(error.statusCode || 500).json({ message: error.message });
+    }
+};
+
 module.exports = {
     register,
     login,
     profile,
+    changePassword,
+    requestPasswordReset,
+    resetPassword,
 };

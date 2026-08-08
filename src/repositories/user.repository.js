@@ -55,10 +55,38 @@ const activateUser = async (id) => {
     return user;
 };
 
-module.exports = {
-    getAllUsers,
-    getUserById,
-    updateUser,
-    softDeleteUser,
-    activateUser,
-};
+    const setResetToken = async (userId, token, expires) => {
+        return await User.findByIdAndUpdate(userId, {
+            resetPasswordToken: token,
+            resetPasswordExpires: expires,
+        }, { new: true }).select('-password');
+    };
+
+    const findByResetToken = async (token) => {
+        return await User.findOne({
+            resetPasswordToken: token,
+            resetPasswordExpires: { $gt: Date.now() },
+        }).select('-password');
+    };
+
+    const clearResetToken = async (userId) => {
+        return await User.findByIdAndUpdate(userId, {
+            $set: { resetPasswordToken: null, resetPasswordExpires: null },
+        }, { new: true }).select('-password');
+    };
+
+    const getUserByIdWithPassword = async (id) => {
+        return await User.findById(id);
+    };
+
+    module.exports = {
+        getAllUsers,
+        getUserById,
+        getUserByIdWithPassword,
+        updateUser,
+        softDeleteUser,
+        activateUser,
+        setResetToken,
+        findByResetToken,
+        clearResetToken,
+    };

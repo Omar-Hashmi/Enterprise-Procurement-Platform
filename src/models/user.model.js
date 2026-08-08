@@ -6,26 +6,32 @@ const userSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
+
         email: {
             type: String,
             required: true,
             unique: true,
         },
+
         password: {
             type: String,
             required: true,
         },
+
         role: {
             type: String,
             enum: [
                 "admin",
                 "employee",
+                "department",
+                "finance_manager",
                 "procurement_manager",
-                "finance",
+                "ceo",
                 "vendor",
             ],
             default: "employee",
         },
+
         department: {
             type: String,
             enum: [
@@ -37,10 +43,12 @@ const userSchema = new mongoose.Schema(
             ],
             required: true,
         },
+
         phone: {
             type: String,
             required: true,
         },
+
         isActive: {
             type: Boolean,
             default: true,

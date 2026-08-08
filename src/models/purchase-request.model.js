@@ -45,6 +45,7 @@ const purchaseRequestSchema = new mongoose.Schema(
                 "Finance Approved",
                 "Procurement Approved",
                 "CEO Approved",
+                "Approved",
                 "Rejected",
                 "Cancelled",
             ],

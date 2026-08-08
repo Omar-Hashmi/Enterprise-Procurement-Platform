@@ -1,37 +1,67 @@
 const express = require("express");
 
 const approvalController = require("../controllers/approval.controller");
-const { authenticate } = require("../middlewares/auth.middleware");
+const authMiddleware = require("../middlewares/auth.middleware");
 
 const router = express.Router();
 
 router.post(
     "/",
-    authenticate,
+    authMiddleware.authenticate,
+    authMiddleware.authorize([
+        "department",
+        "finance_manager",
+        "procurement_manager",
+        "ceo",
+    ]),
     approvalController.createApproval
 );
 
 router.get(
     "/",
-    authenticate,
+    authMiddleware.authenticate,
+    authMiddleware.authorize([
+        "department",
+        "finance_manager",
+        "procurement_manager",
+        "ceo",
+    ]),
     approvalController.getAllApprovals
 );
 
 router.get(
     "/:id",
-    authenticate,
+    authMiddleware.authenticate,
+    authMiddleware.authorize([
+        "department",
+        "finance_manager",
+        "procurement_manager",
+        "ceo",
+    ]),
     approvalController.getApprovalById
 );
 
 router.get(
     "/purchase-request/:purchaseRequestId",
-    authenticate,
+    authMiddleware.authenticate,
+    authMiddleware.authorize([
+        "department",
+        "finance_manager",
+        "procurement_manager",
+        "ceo",
+    ]),
     approvalController.getApprovalsByPurchaseRequest
 );
 
 router.put(
     "/:id",
-    authenticate,
+    authMiddleware.authenticate,
+    authMiddleware.authorize([
+        "department",
+        "finance_manager",
+        "procurement_manager",
+        "ceo",
+    ]),
     approvalController.updateApproval
 );
 

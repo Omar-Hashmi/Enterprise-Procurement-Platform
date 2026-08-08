@@ -17,9 +17,10 @@ const approvalSchema = new mongoose.Schema(
         role: {
             type: String,
             enum: [
+                "department",
+                "finance_manager",
                 "procurement_manager",
-                "finance",
-                "admin",
+                "ceo",
             ],
             required: true,
         },

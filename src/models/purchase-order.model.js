@@ -39,6 +39,7 @@ const purchaseOrderSchema = new mongoose.Schema(
             enum: [
                 "Issued",
                 "Accepted",
+                "In Progress",
                 "Delivered",
                 "Completed",
                 "Cancelled",
@@ -53,6 +54,21 @@ const purchaseOrderSchema = new mongoose.Schema(
         issuedAt: {
             type: Date,
             default: Date.now,
+        },
+        acceptedAt: {
+            type: Date,
+        },
+        inProgressAt: {
+            type: Date,
+        },
+        deliveredAt: {
+            type: Date,
+        },
+        completedAt: {
+            type: Date,
+        },
+        cancelledAt: {
+            type: Date,
         },
     },
     {

@@ -42,6 +42,11 @@ const quotationSchema = new mongoose.Schema(
             trim: true,
         },
 
+        isSelected: {
+            type: Boolean,
+            default: false,
+        },
+
         status: {
             type: String,
             enum: ["Pending", "Approved", "Rejected"],

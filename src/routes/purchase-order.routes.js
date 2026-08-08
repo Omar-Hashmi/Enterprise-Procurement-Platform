@@ -20,7 +20,7 @@ router.post(
 router.get(
     "/",
     authenticate,
-    authorize(["admin", "procurement_manager", "finance"]),
+    authorize(["admin", "procurement_manager", "finance_manager"]),
     purchaseOrderController.getAllPurchaseOrders
 );
 
@@ -28,7 +28,7 @@ router.get(
 router.get(
     "/:id",
     authenticate,
-    authorize(["admin", "procurement_manager", "finance"]),
+    authorize(["admin", "procurement_manager", "finance_manager"]),
     purchaseOrderController.getPurchaseOrderById
 );
 

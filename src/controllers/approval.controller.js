@@ -1,6 +1,6 @@
 const approvalService = require("../services/approval.service");
 
-const createApproval = async (req, res, next) => {
+const createApproval = async (req, res) => {
     try {
         const approval = await approvalService.createApproval(req.body);
 
@@ -9,31 +9,37 @@ const createApproval = async (req, res, next) => {
             approval,
         });
     } catch (error) {
-        next(error);
+        res.status(error.statusCode || 500).json({
+            message: error.message,
+        });
     }
 };
 
-const getAllApprovals = async (req, res, next) => {
+const getAllApprovals = async (req, res) => {
     try {
         const approvals = await approvalService.getAllApprovals();
 
         res.status(200).json(approvals);
     } catch (error) {
-        next(error);
+        res.status(error.statusCode || 500).json({
+            message: error.message,
+        });
     }
 };
 
-const getApprovalById = async (req, res, next) => {
+const getApprovalById = async (req, res) => {
     try {
         const approval = await approvalService.getApprovalById(req.params.id);
 
         res.status(200).json(approval);
     } catch (error) {
-        next(error);
+        res.status(error.statusCode || 500).json({
+            message: error.message,
+        });
     }
 };
 
-const getApprovalsByPurchaseRequest = async (req, res, next) => {
+const getApprovalsByPurchaseRequest = async (req, res) => {
     try {
         const approvals =
             await approvalService.getApprovalsByPurchaseRequest(
@@ -42,11 +48,13 @@ const getApprovalsByPurchaseRequest = async (req, res, next) => {
 
         res.status(200).json(approvals);
     } catch (error) {
-        next(error);
+        res.status(error.statusCode || 500).json({
+            message: error.message,
+        });
     }
 };
 
-const updateApproval = async (req, res, next) => {
+const updateApproval = async (req, res) => {
     try {
         const approval = await approvalService.updateApproval(
             req.params.id,
@@ -58,7 +66,9 @@ const updateApproval = async (req, res, next) => {
             approval,
         });
     } catch (error) {
-        next(error);
+        res.status(error.statusCode || 500).json({
+            message: error.message,
+        });
     }
 };
 

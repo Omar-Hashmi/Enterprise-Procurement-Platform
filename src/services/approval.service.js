@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const approvalRepository = require("../repositories/approval.repository");
 const purchaseRequestRepository = require("../repositories/purchase-request.repository");
 const userRepository = require("../repositories/user.repository");
+const notificationService = require("../services/notification.service");
 
 const ROLE_SEQUENCE = [
     "department",

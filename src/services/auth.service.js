@@ -2,6 +2,7 @@ const bcrypt = require("bcrypt");
 const userRepository = require("../repositories/user.repository");
 const jwt = require("jsonwebtoken");
 const authRepository = require("../repositories/auth.repository");
+const auditLogService = require("../services/audit-log.service");
 
 const register = async (userData) => {
     const hashedPassword = await bcrypt.hash(userData.password, 10);
@@ -13,10 +14,19 @@ const register = async (userData) => {
     return message;
 };
 
-const login = async (userData) => {
+const login = async (userData, ip) => {
     const user = await authRepository.login(userData);
 
     if (!user) {
+        await auditLogService.log({
+            action: "login_failure",
+            entity: "User",
+            entityId: null,
+            performedBy: null,
+            performedByRole: null,
+            ipAddress: ip,
+            details: { email: userData.email }
+        });
         return "User not found";
     }
 
@@ -26,6 +36,15 @@ const login = async (userData) => {
     );
 
     if (!isPasswordMatched) {
+        await auditLogService.log({
+            action: "login_failure",
+            entity: "User",
+            entityId: user._id,
+            performedBy: user._id,
+            performedByRole: user.role,
+            ipAddress: ip,
+            details: {}
+        });
         return "Invalid password";
     }
 
@@ -44,6 +63,16 @@ const login = async (userData) => {
             expiresIn: "1d",
         }
     );
+
+    await auditLogService.log({
+        action: "login_success",
+        entity: "User",
+        entityId: user._id,
+        performedBy: user._id,
+        performedByRole: user.role,
+        ipAddress: ip,
+        details: {}
+    });
 
     return {
         message: "Login Successful",
@@ -82,6 +111,16 @@ const changePassword = async (userId, currentPassword, newPassword) => {
     }
     const hashed = await bcrypt.hash(newPassword, 10);
     await userRepository.updateUser(userId, { password: hashed });
+    // Log password change
+    await auditLogService.log({
+      action: "password_changed",
+      entity: "User",
+      entityId: user._id,
+      performedBy: user._id,
+      performedByRole: user.role,
+      ipAddress: null,
+      details: {}
+    });
     return { message: 'Password changed successfully' };
 };
 
@@ -95,6 +134,16 @@ const resetPasswordRequest = async (email) => {
     const token = crypto.randomBytes(32).toString('hex');
     const expires = Date.now() + 60 * 60 * 1000; // 1 hour
     await userRepository.setResetToken(user._id, token, expires);
+    // Log password reset request (do not store token)
+    await auditLogService.log({
+        action: 'password_reset_requested',
+        entity: 'User',
+        entityId: user._id,
+        performedBy: user._id,
+        performedByRole: user.role,
+        ipAddress: null,
+        details: { email },
+    });
     // TODO: send email with token. For now just return token for testing.
     return { message: 'Password reset token generated', resetToken: token };
 };
@@ -115,6 +164,16 @@ const resetPassword = async (token, newPassword) => {
     const hashed = await bcrypt.hash(newPassword, 10);
     await userRepository.updateUser(user._id, { password: hashed });
     await userRepository.clearResetToken(user._id);
+    // Log password reset success
+    await auditLogService.log({
+        action: 'password_reset_success',
+        entity: 'User',
+        entityId: user._id,
+        performedBy: user._id,
+        performedByRole: user.role,
+        ipAddress: null,
+        details: {},
+    });
     return { message: 'Password has been reset successfully' };
 };
 

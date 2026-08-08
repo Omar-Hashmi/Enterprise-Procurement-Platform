@@ -1,15 +1,18 @@
 // tests/auth.test.js
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const fetch = require('node-fetch'); // using fetch for HTTP requests
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 const User = require('../src/models/user.model');
 const app = require('../src/app');
 const http = require('http');
+const { connectTestDb, disconnectTestDb } = require('./test-db');
+
+const fetch = global.fetch;
 
 let server;
 let baseUrl;
+let initialPasswordHash;
 
 test.before(async () => {
   // start server on random port
@@ -18,25 +21,33 @@ test.before(async () => {
   const { port } = server.address();
   baseUrl = `http://127.0.0.1:${port}/api/auth`;
   // ensure a test user exists
-  await mongoose.connect(process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/testdb', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  });
+  await connectTestDb();
   await User.deleteMany({});
-  const hashed = await require('bcrypt').hash('Initial1!', 10);
+  initialPasswordHash = await require('bcrypt').hash('Initial1!', 10);
   await User.create({
     fullName: 'Test User',
     email: 'test@example.com',
-    password: hashed,
+    password: initialPasswordHash,
     role: 'employee',
     department: 'IT',
     phone: '1234567890',
   });
 });
 
+test.beforeEach(async () => {
+  await User.updateOne(
+    { email: 'test@example.com' },
+    {
+      password: initialPasswordHash,
+      resetPasswordToken: null,
+      resetPasswordExpires: null,
+    }
+  );
+});
+
 test.after(async () => {
-  await mongoose.disconnect();
-  server.close();
+  await disconnectTestDb();
+  await new Promise((resolve) => server.close(resolve));
 });
 
 async function loginAndGetToken() {

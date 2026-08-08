@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
 
 const purchaseOrderRepository = require("../repositories/purchase-order.repository");
+const auditLogService = require('../services/audit-log.service');
+
 const purchaseRequestRepository = require("../repositories/purchase-request.repository");
 const quotationRepository = require("../repositories/quotation.repository");
 const vendorRepository = require("../repositories/vendor.repository");
@@ -201,11 +203,22 @@ const createPurchaseOrder = async (purchaseOrderData) => {
         throw error;
     }
 
-    return await purchaseOrderRepository.createPurchaseOrder({
+    const createdPurchaseOrder = await purchaseOrderRepository.createPurchaseOrder({
         ...purchaseOrderData,
         status: "Issued",
         issuedAt: new Date(),
     });
+    // Log purchase order creation
+    await auditLogService.log({
+        action: "purchase_order_created",
+        entity: "PurchaseOrder",
+        entityId: createdPurchaseOrder._id,
+        performedBy: purchaseOrderData.issuedBy,
+        performedByRole: null, // role can be derived from user if needed
+        ipAddress: null,
+        details: { purchaseOrder: createdPurchaseOrder },
+    });
+    return createdPurchaseOrder;
 };
 
 const getAllPurchaseOrders = async () => {
@@ -311,6 +324,16 @@ const updatePurchaseOrder = async (
         throw error;
     }
 
+    // Log purchase order update
+    await auditLogService.log({
+        action: "purchase_order_updated",
+        entity: "PurchaseOrder",
+        entityId: updatedPurchaseOrder._id,
+        performedBy: null, // caller should provide actor; not available here
+        performedByRole: null,
+        ipAddress: null,
+        details: { before: null, after: updatedPurchaseOrder },
+    });
     return updatedPurchaseOrder;
 };
 
@@ -360,6 +383,16 @@ const cancelPurchaseOrder = async (id) => {
         throw error;
     }
 
+    // Log purchase order cancellation
+    await auditLogService.log({
+        action: "purchase_order_cancelled",
+        entity: "PurchaseOrder",
+        entityId: cancelledPurchaseOrder._id,
+        performedBy: null,
+        performedByRole: null,
+        ipAddress: null,
+        details: { before: purchaseOrder, after: cancelledPurchaseOrder },
+    });
     return cancelledPurchaseOrder;
 };
 

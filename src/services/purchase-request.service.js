@@ -1,8 +1,20 @@
 const mongoose = require("mongoose");
 const purchaseRequestRepository = require("../repositories/purchase-request.repository");
 
+const auditLogService = require('../services/audit-log.service');
+
 const createPurchaseRequest = async (requestData) => {
-    return await purchaseRequestRepository.createPurchaseRequest(requestData);
+    const purchaseRequest = await purchaseRequestRepository.createPurchaseRequest(requestData);
+    await auditLogService.log({
+        action: "purchase_request_created",
+        entity: "PurchaseRequest",
+        entityId: purchaseRequest._id,
+        performedBy: requestData.requestedBy || null,
+        performedByRole: null,
+        ipAddress: null,
+        details: { requestData },
+    });
+    return purchaseRequest;
 };
 
 const getAllPurchaseRequests = async () => {
@@ -63,24 +75,44 @@ const getPurchaseRequestStatus = async (id) => {
 const updatePurchaseRequest = async (id, requestData, user) => {
     const existingRequest = await getPurchaseRequestById(id, user);
 
-    const purchaseRequest =
-        await purchaseRequestRepository.updatePurchaseRequest(
-            existingRequest._id,
-            requestData
-        );
+    const updatedPurchaseRequest = await purchaseRequestRepository.updatePurchaseRequest(
+        existingRequest._id,
+        requestData
+    );
 
-    return purchaseRequest;
+    // Log update event
+    await auditLogService.log({
+        action: "purchase_request_updated",
+        entity: "PurchaseRequest",
+        entityId: updatedPurchaseRequest._id,
+        performedBy: user.userId,
+        performedByRole: user.role,
+        ipAddress: null,
+        details: { before: existingRequest, after: updatedPurchaseRequest }
+    });
+
+    return updatedPurchaseRequest;
 };
 
 const cancelPurchaseRequest = async (id, user) => {
     const existingRequest = await getPurchaseRequestById(id, user);
 
-    const purchaseRequest =
-        await purchaseRequestRepository.cancelPurchaseRequest(
-            existingRequest._id
-        );
+    const cancelledPurchaseRequest = await purchaseRequestRepository.cancelPurchaseRequest(
+        existingRequest._id
+    );
 
-    return purchaseRequest;
+    // Log cancellation
+    await auditLogService.log({
+        action: "purchase_request_cancelled",
+        entity: "PurchaseRequest",
+        entityId: cancelledPurchaseRequest._id,
+        performedBy: user.userId,
+        performedByRole: user.role,
+        ipAddress: null,
+        details: { before: existingRequest, after: cancelledPurchaseRequest }
+    });
+
+    return cancelledPurchaseRequest;
 };
 
 // ⭐ Upload Attachment

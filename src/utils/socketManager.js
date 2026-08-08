@@ -7,7 +7,7 @@ const roleSockets = new Map(); // key: role, value: Set of socket ids
 
 /** Add a new socket connection */
 function addSocket(socket) {
-  const { userId, role } = socket.handshake.auth || {};
+  const { userId, role } = socket.user || socket.handshake.auth || {};
   if (!userId) return;
   socketMap.set(socket.id, { socket, userId, role });
 

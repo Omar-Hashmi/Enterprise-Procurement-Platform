@@ -3,10 +3,10 @@
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { server, io } = require('../server');
 const notificationService = require('../src/services/notification.service');
 const jwt = require('jsonwebtoken');
 const { io: clientIO } = require('socket.io-client');
+const mongoose = require('mongoose');
 
 function generateToken(payload) {
   const secret = process.env.JWT_SECRET || 'mySuperSecretKey123';
@@ -16,10 +16,12 @@ function generateToken(payload) {
 let httpServer;
 let port;
 let clientA, clientB, clientC;
+let serverModule;
 
 test('Setup server', async () => {
+  serverModule = require('../server');
   await new Promise((resolve) => {
-    httpServer = server.listen(0, () => {
+    httpServer = serverModule.server.listen(0, () => {
       port = httpServer.address().port;
       resolve();
     });
@@ -184,5 +186,7 @@ test('Teardown', async () => {
   clientA.disconnect();
   clientB.disconnect();
   clientC.disconnect();
+  await new Promise((resolve) => serverModule.io.close(resolve));
   await new Promise((resolve) => httpServer.close(resolve));
+  await mongoose.disconnect();
 });

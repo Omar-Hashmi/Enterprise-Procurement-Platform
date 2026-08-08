@@ -8,6 +8,7 @@ const purchaseRequestRoutes = require("./routes/purchase-request.routes");
 const vendorRoutes = require("./routes/vendor.routes");
 const quotationRoutes = require("./routes/quotation.routes");
 const purchaseOrderRoutes = require("./routes/purchase-order.routes");
+const auditLogRoutes = require("./routes/audit-log.routes");
 
 const app = express();
 
@@ -25,6 +26,7 @@ app.use("/api/vendors", vendorRoutes);
 app.use("/api/quotations", quotationRoutes);
 app.use("/api/purchase-orders", purchaseOrderRoutes);
 app.use("/api/approvals", approvalRoutes);
+app.use("/api/audit-logs", auditLogRoutes);
 
 // Global Error Handler
 app.use((err, req, res, next) => {

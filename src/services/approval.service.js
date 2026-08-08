@@ -3,6 +3,7 @@ const approvalRepository = require("../repositories/approval.repository");
 const purchaseRequestRepository = require("../repositories/purchase-request.repository");
 const userRepository = require("../repositories/user.repository");
 const notificationService = require("../services/notification.service");
+const auditLogService = require("../services/audit-log.service");
 
 const ROLE_SEQUENCE = [
     "department",
@@ -264,7 +265,7 @@ const createApproval = async (approvalData) => {
     }
 
     if (decision === "Rejected") {
-
+        // Update request status to Rejected
         await purchaseRequestRepository.updatePurchaseRequest(
             purchaseRequest._id,
             {
@@ -273,11 +274,26 @@ const createApproval = async (approvalData) => {
                     approvalData.remarks || "Rejected by approver",
             }
         );
-
-        return await approvalRepository.createApproval({
+        // Create approval record
+        const approval = await approvalRepository.createApproval({
             ...approvalData,
             decision: "Rejected",
         });
+        // Log approval decision
+        await auditLogService.log({
+            action: "approval_decision",
+            entity: "Approval",
+            entityId: approval._id,
+            performedBy: approval.approvedBy,
+            performedByRole: approval.role,
+            ipAddress: null,
+            details: {
+                purchaseRequest: approval.purchaseRequest,
+                decision: approval.decision,
+                remarks: approval.remarks,
+            },
+        });
+        return approval;
     }
 
     const validation = validateApprovalSequence({
@@ -307,6 +323,20 @@ const createApproval = async (approvalData) => {
         }
     );
 
+    // Log approval creation
+    await auditLogService.log({
+      action: "approval_created",
+      entity: "Approval",
+      entityId: approval._id,
+      performedBy: approval.approvedBy,
+      performedByRole: approval.role,
+      ipAddress: null,
+      details: {
+        purchaseRequest: approval.purchaseRequest,
+        decision: approval.decision,
+        remarks: approval.remarks,
+      },
+    });
     return approval;
 };
 

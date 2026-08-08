@@ -3,6 +3,7 @@ const assert = require('node:assert/strict');
 const { mock } = require('node:test');
 
 const purchaseOrderService = require('../src/services/purchase-order.service');
+const auditLogService = require('../src/services/audit-log.service');
 const purchaseOrderRepository = require('../src/repositories/purchase-order.repository');
 const purchaseRequestRepository = require('../src/repositories/purchase-request.repository');
 const quotationRepository = require('../src/repositories/quotation.repository');
@@ -25,6 +26,7 @@ const activeVendor = { _id: validVendorId, status: 'Active' };
 
 /** Restore all mocks after each test */
 function restoreAll() {
+  try { mock.method(auditLogService, 'log').mock.restore(); } catch (e) {}
   try { mock.method(purchaseRequestRepository, 'getPurchaseRequestById').mock.restore(); } catch (e) {}
   try { mock.method(quotationRepository, 'getQuotationById').mock.restore(); } catch (e) {}
   try { mock.method(vendorRepository, 'getVendorById').mock.restore(); } catch (e) {}
@@ -35,6 +37,7 @@ function restoreAll() {
 }
 
 test('Successful PO creation', async () => {
+  mock.method(auditLogService, 'log', async () => null);
   mock.method(purchaseRequestRepository, 'getPurchaseRequestById', async () => approvedPurchaseRequest);
   mock.method(quotationRepository, 'getQuotationById', async () => approvedQuotation);
   mock.method(vendorRepository, 'getVendorById', async () => activeVendor);
@@ -59,6 +62,7 @@ test('Successful PO creation', async () => {
 });
 
 test('Unapproved Purchase Request rejected', async () => {
+  mock.method(auditLogService, 'log', async () => null);
   mock.method(purchaseRequestRepository, 'getPurchaseRequestById', async () => ({ _id: validPurchaseRequestId, status: 'Pending' }));
   mock.method(quotationRepository, 'getQuotationById', async () => approvedQuotation);
   mock.method(vendorRepository, 'getVendorById', async () => activeVendor);
@@ -79,6 +83,7 @@ test('Unapproved Purchase Request rejected', async () => {
 });
 
 test('Invalid quotation rejected', async () => {
+  mock.method(auditLogService, 'log', async () => null);
   mock.method(purchaseRequestRepository, 'getPurchaseRequestById', async () => approvedPurchaseRequest);
   mock.method(quotationRepository, 'getQuotationById', async () => null);
   mock.method(vendorRepository, 'getVendorById', async () => activeVendor);
@@ -99,6 +104,7 @@ test('Invalid quotation rejected', async () => {
 });
 
 test('Quotation belonging to another Purchase Request rejected', async () => {
+  mock.method(auditLogService, 'log', async () => null);
   mock.method(purchaseRequestRepository, 'getPurchaseRequestById', async () => approvedPurchaseRequest);
   const wrongQuotation = { ...approvedQuotation, purchaseRequest: '507f1f77bcf86cd799439099' };
   mock.method(quotationRepository, 'getQuotationById', async () => wrongQuotation);
@@ -120,6 +126,7 @@ test('Quotation belonging to another Purchase Request rejected', async () => {
 });
 
 test('Vendor mismatch rejected', async () => {
+  mock.method(auditLogService, 'log', async () => null);
   mock.method(purchaseRequestRepository, 'getPurchaseRequestById', async () => approvedPurchaseRequest);
   mock.method(quotationRepository, 'getQuotationById', async () => approvedQuotation);
   const otherVendor = { _id: '507f1f77bcf86cd799439099', status: 'Active' };
@@ -141,6 +148,7 @@ test('Vendor mismatch rejected', async () => {
 });
 
 test('Inactive vendor rejected', async () => {
+  mock.method(auditLogService, 'log', async () => null);
   mock.method(purchaseRequestRepository, 'getPurchaseRequestById', async () => approvedPurchaseRequest);
   mock.method(quotationRepository, 'getQuotationById', async () => approvedQuotation);
   const inactiveVendor = { _id: validVendorId, status: 'Inactive' };
@@ -162,6 +170,7 @@ test('Inactive vendor rejected', async () => {
 });
 
 test('Duplicate PO rejected', async () => {
+  mock.method(auditLogService, 'log', async () => null);
   mock.method(purchaseRequestRepository, 'getPurchaseRequestById', async () => approvedPurchaseRequest);
   mock.method(quotationRepository, 'getQuotationById', async () => approvedQuotation);
   mock.method(vendorRepository, 'getVendorById', async () => activeVendor);
@@ -189,6 +198,7 @@ test('Invalid status transition rejected', () => {
 });
 
 test('Valid status transition accepted', async () => {
+  mock.method(auditLogService, 'log', async () => null);
   const existingPO = { _id: '507f1f77bcf86cd799439015', status: 'Issued' };
   mock.method(purchaseOrderRepository, 'getPurchaseOrderById', async () => existingPO);
   mock.method(purchaseOrderRepository, 'updatePurchaseOrder', async (id, data) => ({ ...existingPO, ...data }));
@@ -200,6 +210,7 @@ test('Valid status transition accepted', async () => {
 });
 
 test('Cancellation', async () => {
+  mock.method(auditLogService, 'log', async () => null);
   const existingPO = { _id: '507f1f77bcf86cd799439016', status: 'Issued' };
   mock.method(purchaseOrderRepository, 'getPurchaseOrderById', async () => existingPO);
   mock.method(purchaseOrderRepository, 'updatePurchaseOrder', async (id, data) => ({ ...existingPO, ...data }));
@@ -211,6 +222,7 @@ test('Cancellation', async () => {
 });
 
 test('Delivery schedule and payment terms persisted', async () => {
+  mock.method(auditLogService, 'log', async () => null);
   const po = {
     purchaseRequest: validPurchaseRequestId,
     quotation: validQuotationId,

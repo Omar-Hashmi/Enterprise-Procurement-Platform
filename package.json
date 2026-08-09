@@ -1,0 +1,31 @@
+{
+  "name": "enterprise-procurement-platform",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "node tests/auth.test.js && node tests/workflow.test.js && node tests/purchase-order.test.js && node tests/notification.test.js && node tests/audit-log.test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Omar-Hashmi/Enterprise-Procurement-Platform.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Omar-Hashmi/Enterprise-Procurement-Platform/issues"
+  },
+  "homepage": "https://github.com/Omar-Hashmi/Enterprise-Procurement-Platform#readme",
+  "description": "",
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "dotenv": "^17.4.2",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^9.8.1",
+    "multer": "^2.2.0",
+    "socket.io": "^4.7.5",
+    "socket.io-client": "^4.7.5"
+  }
+}

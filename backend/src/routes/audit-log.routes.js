@@ -1,6 +1,6 @@
 const express = require('express');
 const auditLogController = require('../controllers/audit-log.controller');
-const { authenticate, authorize } = require('../middlewares/auth.middleware');
+const { authenticate, authorize } = require('../middleware/auth.middleware');
 
 const router = express.Router();
 

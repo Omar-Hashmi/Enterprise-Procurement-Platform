@@ -1,50 +1,97 @@
-const express = require("express");
-const vendorController = require("../controllers/vendor.controller");
+// File: vendor.routes.js
+
+const { Router } = require("express");
+const { protect } = require("../middleware/auth.middleware");
+const { restrictTo } = require("../middleware/restrictTo.middleware");
 const {
-    authenticate,
-    authorize,
-} = require("../middlewares/auth.middleware");
+  createVendor,
+  getVendors,
+  getVendorById,
+  updateVendor,
+  updateVendorStatus,
+  deleteVendor,
+  rateVendor,
+  addCertification,
+  addBankAccount,
+  getVendorCategories,
+  createVendorCategory,
+  getVendorStatusSummary,
+} = require("../controllers/vendor.controller");
+const {
+  validateCreateVendor,
+  validateUpdateVendor,
+  validateUpdateVendorStatus,
+  validateVendorIdParam,
+  validateListVendorsQuery,
+  validateRateVendor,
+  validateAddCertification,
+  validateAddBankAccount,
+  validateCreateVendorCategory,
+} = require("../validations/vendor.validation");
 
-const router = express.Router();
+const router = Router();
 
-// Create Vendor
+// All vendor routes require an authenticated session
+router.use(protect);
+
+// Categories (kept above /:id routes so "categories" isn't parsed as an id)
+router
+  .route("/categories")
+  .get(getVendorCategories)
+  .post(
+    restrictTo("procurement_officer", "admin"),
+    validateCreateVendorCategory,
+    createVendorCategory
+  );
+
+router.get("/status-summary", restrictTo("procurement_officer", "admin"), getVendorStatusSummary);
+
+router
+  .route("/")
+  .get(validateListVendorsQuery, getVendors)
+  .post(restrictTo("procurement_officer", "admin"), validateCreateVendor, createVendor);
+
+router
+  .route("/:id")
+  .get(validateVendorIdParam, getVendorById)
+  .patch(
+    restrictTo("procurement_officer", "admin"),
+    validateVendorIdParam,
+    validateUpdateVendor,
+    updateVendor
+  )
+  .delete(restrictTo("admin"), validateVendorIdParam, deleteVendor);
+
+router.patch(
+  "/:id/status",
+  restrictTo("procurement_officer", "admin"),
+  validateVendorIdParam,
+  validateUpdateVendorStatus,
+  updateVendorStatus
+);
+
 router.post(
-    "/",
-    authenticate,
-    authorize(["admin"]),
-    vendorController.createVendor
+  "/:id/ratings",
+  restrictTo("procurement_officer", "department_manager", "admin"),
+  validateVendorIdParam,
+  validateRateVendor,
+  rateVendor
 );
 
-// Get All Vendors
-router.get(
-    "/",
-    authenticate,
-    authorize(["admin", "employee"]),
-    vendorController.getAllVendors
+router.post(
+  "/:id/certifications",
+  restrictTo("procurement_officer", "admin"),
+  validateVendorIdParam,
+  validateAddCertification,
+  addCertification
 );
 
-// Get Vendor By ID
-router.get(
-    "/:id",
-    authenticate,
-    authorize(["admin", "employee"]),
-    vendorController.getVendorById
-);
-
-// Update Vendor
-router.put(
-    "/:id",
-    authenticate,
-    authorize(["admin"]),
-    vendorController.updateVendor
-);
-
-// Delete (Deactivate) Vendor
-router.delete(
-    "/:id",
-    authenticate,
-    authorize(["admin"]),
-    vendorController.deleteVendor
+router.post(
+  "/:id/bank-accounts",
+  restrictTo("procurement_officer", "admin"),
+  validateVendorIdParam,
+  validateAddBankAccount,
+  addBankAccount
 );
 
 module.exports = router;

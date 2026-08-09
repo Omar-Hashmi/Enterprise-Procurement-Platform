@@ -1,4 +1,4 @@
-import { redisClient } from "../cache/redis";
+import { redisClient } from "../config/redis";
 import { emailService, EmailPayload } from "../services/email.service";
 
 /**

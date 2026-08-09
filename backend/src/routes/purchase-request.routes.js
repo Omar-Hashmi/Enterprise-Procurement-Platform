@@ -3,8 +3,8 @@ const purchaseRequestController = require("../controllers/purchase-request.contr
 const {
     authenticate,
     authorize,
-} = require("../middlewares/auth.middleware");
-const upload = require("../middlewares/upload.middleware");
+} = require("../middleware/auth.middleware");
+const upload = require("../middleware/upload.middleware");
 
 const router = express.Router();
 

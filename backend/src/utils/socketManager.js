@@ -1,4 +1,4 @@
-// src/utils/socketManager.js
+// File: socketManager.js
 // Manages Socket.IO connections and provides helper methods to emit events to users or roles.
 
 const socketMap = new Map(); // key: socket.id, value: {socket, userId, role}
@@ -46,31 +46,33 @@ function removeSocket(socket) {
 function getSocketsByUserId(userId) {
   const ids = userSockets.get(userId);
   if (!ids) return [];
-  return Array.from(ids).map(id => socketMap.get(id).socket);
+  return Array.from(ids).map((id) => socketMap.get(id)?.socket).filter(Boolean);
 }
 
 /** Get sockets for a specific role */
 function getSocketsByRole(role) {
   const ids = roleSockets.get(role);
   if (!ids) return [];
-  return Array.from(ids).map(id => socketMap.get(id).socket);
+  return Array.from(ids).map((id) => socketMap.get(id)?.socket).filter(Boolean);
 }
 
 /** Emit an event to a specific user */
 function emitToUser(userId, event, payload) {
   const sockets = getSocketsByUserId(userId);
-  sockets.forEach(s => s.emit(event, payload));
+  sockets.forEach((s) => s.emit(event, payload));
 }
 
 /** Emit an event to all users with a role */
 function emitToRole(role, event, payload) {
   const sockets = getSocketsByRole(role);
-  sockets.forEach(s => s.emit(event, payload));
+  sockets.forEach((s) => s.emit(event, payload));
 }
 
 module.exports = {
   addSocket,
   removeSocket,
+  getSocketsByUserId,
+  getSocketsByRole,
   emitToUser,
   emitToRole,
 };

@@ -4,7 +4,7 @@ const purchaseOrderController = require("../controllers/purchase-order.controlle
 const {
     authenticate,
     authorize,
-} = require("../middlewares/auth.middleware");
+} = require("../middleware/auth.middleware");
 
 const router = express.Router();
 

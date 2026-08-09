@@ -4,7 +4,7 @@ const http = require('http');
 const app = require('./src/app');
 const connectDB = require('./src/config/db');
 const socketIO = require('socket.io');
-const socketAuth = require('./src/middlewares/socketAuth.middleware');
+const socketAuth = require('./src/middleware/socketAuth.middleware');
 const socketManager = require('./src/utils/socketManager');
 
 connectDB();

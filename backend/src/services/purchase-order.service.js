@@ -4,7 +4,7 @@ const purchaseOrderRepository = require("../repositories/purchase-order.reposito
 const auditLogService = require('../services/audit-log.service');
 
 const purchaseRequestRepository = require("../repositories/purchase-request.repository");
-const quotationRepository = require("../repositories/quotation.repository");
+const { rfqRepository } = require("../repositories/rfq.repository");
 const vendorRepository = require("../repositories/vendor.repository");
 
 const VALID_TRANSITIONS = {
@@ -109,7 +109,7 @@ const createPurchaseOrder = async (purchaseOrderData) => {
     }
 
     const quotation =
-        await quotationRepository.getQuotationById(
+        await rfqRepository.findQuotationById(
             purchaseOrderData.quotation
         );
 

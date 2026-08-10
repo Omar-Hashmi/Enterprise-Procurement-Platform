@@ -1,5 +1,10 @@
 const express = require("express");
 const multer = require("multer");
+const helmet = require("helmet");
+const cors = require("cors");
+const morgan = require("morgan");
+const compression = require("compression");
+const rateLimit = require("express-rate-limit");
 
 const approvalRoutes = require("./routes/approval.routes");
 const authRoutes = require("./routes/auth.routes");
@@ -18,6 +23,18 @@ const analyticsRoutes = require("./routes/analytics.routes");
 
 const app = express();
 
+app.use(helmet());
+app.use(cors());
+app.use(compression());
+app.use(morgan("tiny"));
+app.use(
+    rateLimit({
+        windowMs: 15 * 60 * 1000,
+        max: 1000,
+        standardHeaders: true,
+        legacyHeaders: false,
+    })
+);
 app.use(express.json());
 
 app.get("/", (req, res) => {

@@ -1,8 +1,8 @@
-import cron from "node-cron";
-import { contractService } from "../services/contract.service.js";
-import { emailService } from "../services/email.service.js";
-import { enqueueEmail } from "../queues/email.queue.js";
-import { isReminderDue } from "../utils/contractReminder.js";
+const cron = require("node-cron");
+const { contractService } = require("../services/contract.service");
+const { emailService } = require("../services/email.service");
+const { enqueueEmail } = require("../queues/email.queue");
+const { isReminderDue } = require("../utils/contractReminder");
 
 /**
  * Contract Renewal Reminder Job
@@ -17,7 +17,7 @@ const isPopulatedVendor = (vendor) => {
   return typeof vendor === "object" && vendor !== null;
 };
 
-export const runContractReminderCheck = async () => {
+const runContractReminderCheck = async () => {
   const contracts = await contractService.getDueReminders();
   let processed = 0;
   let failed = 0;
@@ -69,18 +69,23 @@ export const runContractReminderCheck = async () => {
 let scheduledTask = null;
 
 /** Schedules the daily check. Call once at server startup. Default: 07:00 every day. */
-export const scheduleContractReminderJob = (cronExpression = "0 7 * * *") => {
+const scheduleContractReminderJob = (cronExpression = "0 7 * * *") => {
   if (scheduledTask) return;
 
   scheduledTask = cron.schedule(cronExpression, () => {
     void runContractReminderCheck().then(({ processed, failed }) => {
-      // eslint-disable-next-line no-console
       console.log(`[contractReminder.job] run complete — processed: ${processed}, failed: ${failed}`);
     });
   });
 };
 
-export const stopContractReminderJob = () => {
-  scheduledTask?.stop();
+const stopContractReminderJob = () => {
+  if (scheduledTask) scheduledTask.stop();
   scheduledTask = null;
+};
+
+module.exports = {
+  runContractReminderCheck,
+  scheduleContractReminderJob,
+  stopContractReminderJob,
 };

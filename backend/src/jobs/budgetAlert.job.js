@@ -1,8 +1,8 @@
-import cron from "node-cron";
-import { budgetService } from "../services/budget.service.js";
-import { emailService } from "../services/email.service.js";
-import { enqueueEmail } from "../queues/email.queue.js";
-import { calculateUtilizationPercent } from "../utils/budgetCalculator.js";
+const cron = require("node-cron");
+const { budgetService } = require("../services/budget.service");
+const { emailService } = require("../services/email.service");
+const { enqueueEmail } = require("../queues/email.queue");
+const { calculateUtilizationPercent } = require("../utils/budgetCalculator");
 
 /**
  * Budget Alert Job
@@ -19,7 +19,7 @@ const isPopulatedDepartment = (department) => {
   return typeof department === "object" && department !== null;
 };
 
-export const runBudgetAlertCheck = async () => {
+const runBudgetAlertCheck = async () => {
   const budgets = await budgetService.getBudgetsOverThreshold();
   let alerted = 0;
 
@@ -60,18 +60,23 @@ export const runBudgetAlertCheck = async () => {
 let scheduledTask = null;
 
 /** Schedules the daily check. Call once at server startup. Default: 08:00 every day. */
-export const scheduleBudgetAlertJob = (cronExpression = "0 8 * * *") => {
+const scheduleBudgetAlertJob = (cronExpression = "0 8 * * *") => {
   if (scheduledTask) return;
 
   scheduledTask = cron.schedule(cronExpression, () => {
     void runBudgetAlertCheck().then(({ alerted }) => {
-      // eslint-disable-next-line no-console
       console.log(`[budgetAlert.job] run complete — alerted: ${alerted} budgets`);
     });
   });
 };
 
-export const stopBudgetAlertJob = () => {
-  scheduledTask?.stop();
+const stopBudgetAlertJob = () => {
+  if (scheduledTask) scheduledTask.stop();
   scheduledTask = null;
+};
+
+module.exports = {
+  runBudgetAlertCheck,
+  scheduleBudgetAlertJob,
+  stopBudgetAlertJob,
 };

@@ -3,7 +3,7 @@
 
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const notificationService = require('../src/services/notification.service');
+const notificationService = require('../backend/src/services/notification.service');
 const jwt = require('jsonwebtoken');
 const { io: clientIO } = require('socket.io-client');
 const mongoose = require('mongoose');
@@ -19,7 +19,7 @@ let clientA, clientB, clientC;
 let serverModule;
 
 test('Setup server', async () => {
-  serverModule = require('../server');
+  serverModule = require('../backend/server');
   await new Promise((resolve) => {
     httpServer = serverModule.server.listen(0, () => {
       port = httpServer.address().port;

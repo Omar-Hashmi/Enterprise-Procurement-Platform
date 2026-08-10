@@ -4,19 +4,19 @@ const http = require("http");
 const bcrypt = require("bcrypt");
 const mongoose = require("mongoose");
 
-const app = require("../src/app");
-const authService = require("../src/services/auth.service");
-const purchaseRequestService = require("../src/services/purchase-request.service");
-const approvalService = require("../src/services/approval.service");
-const purchaseOrderService = require("../src/services/purchase-order.service");
+const app = require("../backend/src/app");
+const authService = require("../backend/src/services/auth.service");
+const purchaseRequestService = require("../backend/src/services/purchase-request.service");
+const approvalService = require("../backend/src/services/approval.service");
+const purchaseOrderService = require("../backend/src/services/purchase-order.service");
 
-const User = require("../src/models/user.model");
-const AuditLog = require("../src/models/audit-log.model");
-const PurchaseRequest = require("../src/models/purchase-request.model");
-const Approval = require("../src/models/approval.model");
-const PurchaseOrder = require("../src/models/purchase-order.model");
-const Quotation = require("../src/models/quotation.model");
-const Vendor = require("../src/models/vendor.model");
+const User = require("../backend/src/models/user.model");
+const AuditLog = require("../backend/src/models/audit-log.model");
+const PurchaseRequest = require("../backend/src/models/purchase-request.model");
+const Approval = require("../backend/src/models/approval.model");
+const PurchaseOrder = require("../backend/src/models/purchase-order.model");
+const { RFQ } = require("../backend/src/models/RFQ");
+const { Vendor } = require("../backend/src/models/vendor.model");
 const { connectTestDb, disconnectTestDb } = require("./test-db");
 
 const jwtSecret = process.env.JWT_SECRET || "test-audit-secret";
@@ -78,7 +78,7 @@ test.before(async () => {
         Approval.deleteMany({}),
         PurchaseOrder.deleteMany({}),
         PurchaseRequest.deleteMany({}),
-        Quotation.deleteMany({}),
+        RFQ.deleteMany({}),
         Vendor.deleteMany({}),
         User.deleteMany({}),
     ]);
@@ -190,27 +190,60 @@ test.before(async () => {
     });
 
     vendor = await Vendor.create({
-        companyName: "Audit Vendor",
-        contactPerson: "Vendor Contact",
-        email: "vendor.audit@example.com",
-        phone: "7777777777",
-        address: "1 Audit Street",
-        category: "IT Equipment",
-        taxNumber: "TAX-AUDIT-001",
-        status: "Active",
+        vendorCode: 'VEND-AUDIT-001',
+        companyName: 'Audit Vendor',
+        companyInfo: {
+            registrationNumber: 'REG-AUDIT-001',
+            website: '',
+            industry: 'IT',
+            address: {
+                street: '1 Audit Street',
+                city: 'AuditCity',
+                state: 'AuditState',
+                country: 'AuditLand',
+                postalCode: '00000',
+            },
+            contactPerson: {
+                name: 'Vendor Contact',
+                email: 'vendor.audit@example.com',
+                phone: '7777777777',
+                designation: 'Manager',
+            },
+        },
+        taxInfo: { taxId: 'TAX-AUDIT-001' },
+        categories: [],
+        certifications: [],
+        bankAccounts: [],
+        ratings: [],
+        averageRating: 0,
+        status: 'active',
+        createdBy: adminUser._id,
     });
 
-    quotation = await Quotation.create({
-        purchaseRequest: purchaseRequest._id,
-        vendor: vendor._id,
-        quotedPrice: 700000,
-        currency: "PKR",
-        deliveryTime: 14,
-        warranty: "12 months",
-        remarks: "Selected quotation",
-        isSelected: true,
-        status: "Approved",
+    const rfq = await RFQ.create({
+        rfqNumber: 'RFQ-AUDIT-001',
+        title: 'Audit RFQ',
+        description: 'RFQ for audit test',
+        purchaseRequisition: purchaseRequest._id,
+        department: mongoose.Types.ObjectId(),
+        items: [ { description: 'Laptop', quantity: 1, unit: 'unit', specifications: 'Spec' } ],
+        submissionDeadline: new Date(),
+        quotas: [],
+        quotations: [
+            {
+                vendor: vendor._id,
+                status: 'Approved',
+                items: [],
+                totalQuoteAmount: 700000,
+                paymentTerms: 'Net 30',
+                deliveryTerms: '14 days',
+                submittedAt: new Date(),
+            },
+        ],
+        createdBy: adminUser._id,
     });
+
+    quotation = rfq.quotations[0];
 });
 
 test.after(async () => {

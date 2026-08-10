@@ -2,11 +2,11 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const { mock } = require("node:test");
 
-const approvalService = require("../src/services/approval.service");
-const purchaseOrderService = require("../src/services/purchase-order.service");
-const approvalRepository = require("../src/repositories/approval.repository");
-const purchaseRequestRepository = require("../src/repositories/purchase-request.repository");
-const userRepository = require("../src/repositories/user.repository");
+const approvalService = require("../backend/src/services/approval.service");
+const purchaseOrderService = require("../backend/src/services/purchase-order.service");
+const approvalRepository = require("../backend/src/repositories/approval.repository");
+const purchaseRequestRepository = require("../backend/src/repositories/purchase-request.repository");
+const userRepository = require("../backend/src/repositories/user.repository");
 
 test("department approval succeeds for a pending request", () => {
     const result = approvalService.validateApprovalSequence({

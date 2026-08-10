@@ -3,8 +3,9 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
-const User = require('../src/models/user.model');
-const app = require('../src/app');
+const User = require('../backend/src/models/user.model');
+process.env.JWT_SECRET = process.env.JWT_SECRET || 'test_jwt_secret';
+const app = require('../backend/src/app');
 const http = require('http');
 const { connectTestDb, disconnectTestDb } = require('./test-db');
 

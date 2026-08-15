@@ -24,7 +24,7 @@ const createVendor = catchAsync(async (req, res) => {
     companyInfo: req.body.companyInfo,
     taxInfo: req.body.taxInfo,
     categories: req.body.categories,
-    createdBy: req.user.id,
+    createdBy: req.user.userId,
   });
 
   res.status(201).json({ success: true, data: vendor });
@@ -82,7 +82,7 @@ const rateVendor = catchAsync(async (req, res) => {
     costEfficiencyScore: req.body.costEfficiencyScore,
     complianceScore: req.body.complianceScore,
     comments: req.body.comments,
-    ratedBy: req.user.id,
+    ratedBy: req.user.userId,
   });
 
   res.status(201).json({ success: true, data: vendor });

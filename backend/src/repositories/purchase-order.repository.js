@@ -9,7 +9,6 @@ const createPurchaseOrder = async (purchaseOrderData) => {
 const getAllPurchaseOrders = async () => {
     const purchaseOrders = await PurchaseOrder.find()
         .populate("purchaseRequest")
-        .populate("quotation")
         .populate("vendor")
         .populate("issuedBy", "fullName email role");
 
@@ -19,7 +18,6 @@ const getAllPurchaseOrders = async () => {
 const getPurchaseOrderById = async (id) => {
     const purchaseOrder = await PurchaseOrder.findById(id)
         .populate("purchaseRequest")
-        .populate("quotation")
         .populate("vendor")
         .populate("issuedBy", "fullName email role");
 
@@ -36,7 +34,6 @@ const updatePurchaseOrder = async (id, purchaseOrderData) => {
         }
     )
         .populate("purchaseRequest")
-        .populate("quotation")
         .populate("vendor")
         .populate("issuedBy", "fullName email role");
 
@@ -55,7 +52,6 @@ const cancelPurchaseOrder = async (id) => {
         }
     )
         .populate("purchaseRequest")
-        .populate("quotation")
         .populate("vendor")
         .populate("issuedBy", "fullName email role");
 

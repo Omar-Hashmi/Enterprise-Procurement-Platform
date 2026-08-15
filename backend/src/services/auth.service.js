@@ -5,6 +5,12 @@ const authRepository = require("../repositories/auth.repository");
 const auditLogService = require("../services/audit-log.service");
 
 const register = async (userData) => {
+    if (!userData || !userData.password) {
+        const error = new Error("Password is required");
+        error.statusCode = 400;
+        throw error;
+    }
+
     const hashedPassword = await bcrypt.hash(userData.password, 10);
 
     userData.password = hashedPassword;
@@ -15,6 +21,12 @@ const register = async (userData) => {
 };
 
 const login = async (userData, ip) => {
+    if (!userData || !userData.email || !userData.password) {
+        const error = new Error("Email and password are required");
+        error.statusCode = 400;
+        throw error;
+    }
+
     const user = await authRepository.login(userData);
 
     if (!user) {
@@ -27,7 +39,9 @@ const login = async (userData, ip) => {
             ipAddress: ip,
             details: { email: userData.email }
         });
-        return "User not found";
+        const error = new Error("User not found");
+        error.statusCode = 401;
+        throw error;
     }
 
     const isPasswordMatched = await bcrypt.compare(
@@ -45,12 +59,16 @@ const login = async (userData, ip) => {
             ipAddress: ip,
             details: {}
         });
-        return "Invalid password";
+        const error = new Error("Invalid password");
+        error.statusCode = 401;
+        throw error;
     }
 
     // Check if user account is active
     if (!user.isActive) {
-        return "Your account is inactive. Please contact the administrator.";
+        const error = new Error("Your account is inactive. Please contact the administrator.");
+        error.statusCode = 403;
+        throw error;
     }
 
     const token = jwt.sign(

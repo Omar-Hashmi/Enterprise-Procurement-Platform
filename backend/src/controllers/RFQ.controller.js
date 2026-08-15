@@ -26,7 +26,7 @@ const createRFQ = catchAsync(async (req, res) => {
     department: req.body.department,
     items: req.body.items,
     submissionDeadline: new Date(req.body.submissionDeadline),
-    createdBy: req.user.id,
+    createdBy: req.user.userId,
   });
 
   res.status(201).json({ success: true, data: rfq });

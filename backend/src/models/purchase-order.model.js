@@ -9,7 +9,6 @@ const purchaseOrderSchema = new mongoose.Schema(
         },
         quotation: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "Quotation",
             required: true,
         },
         vendor: {

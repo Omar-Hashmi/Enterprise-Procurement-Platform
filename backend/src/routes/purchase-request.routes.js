@@ -5,6 +5,7 @@ const {
     authorize,
 } = require("../middleware/auth.middleware");
 const upload = require("../middleware/upload.middleware");
+const { validateCreatePurchaseRequest } = require("../validations/purchase-request.validation");
 
 const router = express.Router();
 
@@ -37,6 +38,7 @@ router.post(
     "/",
     authenticate,
     authorize(["employee", "admin"]),
+    validateCreatePurchaseRequest,
     purchaseRequestController.createPurchaseRequest
 );
 

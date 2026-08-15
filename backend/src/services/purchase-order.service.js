@@ -5,7 +5,7 @@ const auditLogService = require('../services/audit-log.service');
 
 const purchaseRequestRepository = require("../repositories/purchase-request.repository");
 const { rfqRepository } = require("../repositories/rfq.repository");
-const vendorRepository = require("../repositories/vendor.repository");
+const { vendorRepository } = require("../repositories/vendor.repository");
 
 const VALID_TRANSITIONS = {
     Issued: ["Accepted", "Cancelled"],
@@ -160,7 +160,7 @@ const createPurchaseOrder = async (purchaseOrderData) => {
     }
 
     const vendor =
-        await vendorRepository.getVendorById(
+        await vendorRepository.findById(
             purchaseOrderData.vendor
         );
 

@@ -15,7 +15,8 @@ const createPurchaseRequest = async (req, res) => {
             purchaseRequest,
         });
     } catch (error) {
-        return res.status(error.statusCode || 500).json({
+        const statusCode = error.statusCode || (error.name === "ValidationError" || error.name === "CastError" ? 400 : 500);
+        return res.status(statusCode).json({
             message: error.message,
         });
     }

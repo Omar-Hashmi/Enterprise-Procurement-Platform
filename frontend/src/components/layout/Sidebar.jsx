@@ -14,11 +14,28 @@ import DashboardOutlinedIcon from '@mui/icons-material/DashboardOutlined';
 import BusinessCenterIcon from '@mui/icons-material/BusinessCenter';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import AssignmentOutlinedIcon from '@mui/icons-material/AssignmentOutlined';
+import StorefrontOutlinedIcon from '@mui/icons-material/StorefrontOutlined';
+import RateReviewOutlinedIcon from '@mui/icons-material/RateReviewOutlined';
+import ShoppingBagOutlinedIcon from '@mui/icons-material/ShoppingBagOutlined';
+import HistoryOutlinedIcon from '@mui/icons-material/HistoryOutlined';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useAuthStore } from '../../stores/authStore';
+import { APPROVAL_ROLES, USER_ROLES } from '../../utils/constants';
 
 export const Sidebar = ({ mobileOpen, onMobileClose, drawerWidth }) => {
   const location = useLocation();
   const navigate = useNavigate();
+  const user = useAuthStore((state) => state.user);
+
+  const userRole = user?.role || '';
+  const isAdmin = userRole === USER_ROLES.ADMIN;
+  const canAccessApprovals = [...APPROVAL_ROLES, USER_ROLES.ADMIN].includes(userRole);
+  const canAccessPO = [
+    USER_ROLES.ADMIN,
+    USER_ROLES.PROCUREMENT_MANAGER,
+    USER_ROLES.FINANCE_MANAGER,
+    USER_ROLES.PROCUREMENT_OFFICER,
+  ].includes(userRole);
 
   const navigationItems = [
     {
@@ -31,6 +48,38 @@ export const Sidebar = ({ mobileOpen, onMobileClose, drawerWidth }) => {
       path: '/purchase-requests',
       icon: <AssignmentOutlinedIcon />,
     },
+    ...(canAccessApprovals
+      ? [
+          {
+            label: 'Approvals Queue',
+            path: '/approvals',
+            icon: <RateReviewOutlinedIcon />,
+          },
+        ]
+      : []),
+    ...(canAccessPO
+      ? [
+          {
+            label: 'Purchase Orders',
+            path: '/purchase-orders',
+            icon: <ShoppingBagOutlinedIcon />,
+          },
+        ]
+      : []),
+    {
+      label: 'Vendors',
+      path: '/vendors',
+      icon: <StorefrontOutlinedIcon />,
+    },
+    ...(isAdmin
+      ? [
+          {
+            label: 'Audit Logs',
+            path: '/audit-logs',
+            icon: <HistoryOutlinedIcon />,
+          },
+        ]
+      : []),
     {
       label: 'Profile & Security',
       path: '/profile',
@@ -88,7 +137,9 @@ export const Sidebar = ({ mobileOpen, onMobileClose, drawerWidth }) => {
 
         <List disablePadding>
           {navigationItems.map((item) => {
-            const isSelected = location.pathname === item.path;
+            const isSelected =
+              location.pathname === item.path ||
+              (item.path !== '/dashboard' && location.pathname.startsWith(item.path + '/'));
             return (
               <ListItem key={item.path} disablePadding sx={{ mb: 0.5 }}>
                 <ListItemButton

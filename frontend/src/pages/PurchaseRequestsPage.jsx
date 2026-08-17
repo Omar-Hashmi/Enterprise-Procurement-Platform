@@ -20,6 +20,7 @@ import {
   Tooltip,
   Button,
   Grid,
+  Alert,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import FilterListIcon from '@mui/icons-material/FilterList';
@@ -79,6 +80,8 @@ export const PurchaseRequestsPage = () => {
       const response = await apiClient.get('/purchase-requests');
       return Array.isArray(response.data) ? response.data : [];
     },
+    staleTime: 0,
+    refetchOnMount: 'always',
   });
 
   // Safe client-side search and filtering over the complete backend dataset

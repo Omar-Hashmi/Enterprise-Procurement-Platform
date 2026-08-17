@@ -21,14 +21,28 @@ import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../stores/authStore';
+import { useNotificationStore } from '../../stores/notificationStore';
+import NotificationPopover from '../notifications/NotificationPopover';
 
 export const Navbar = ({ onMobileNavToggle, drawerWidth }) => {
   const navigate = useNavigate();
   const user = useAuthStore((state) => state.user);
   const clearAuth = useAuthStore((state) => state.clearAuth);
+  const unreadCount = useNotificationStore((state) => state.unreadCount);
 
   const [anchorEl, setAnchorEl] = useState(null);
   const isMenuOpen = Boolean(anchorEl);
+
+  const [notifAnchorEl, setNotifAnchorEl] = useState(null);
+  const isNotifOpen = Boolean(notifAnchorEl);
+
+  const handleNotificationOpen = (event) => {
+    setNotifAnchorEl(event.currentTarget);
+  };
+
+  const handleNotificationClose = () => {
+    setNotifAnchorEl(null);
+  };
 
   const handleProfileMenuOpen = (event) => {
     setAnchorEl(event.currentTarget);
@@ -86,13 +100,25 @@ export const Navbar = ({ onMobileNavToggle, drawerWidth }) => {
 
         {/* Action icons / User Profile Trigger */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-          <Tooltip title="Notifications (Placeholder)">
-            <IconButton color="inherit" size="medium" sx={{ color: 'text.secondary' }}>
-              <Badge badgeContent={0} color="primary">
+          <Tooltip title={unreadCount > 0 ? `${unreadCount} unread notifications` : 'Notifications'}>
+            <IconButton
+              color="inherit"
+              size="medium"
+              onClick={handleNotificationOpen}
+              sx={{ color: unreadCount > 0 ? 'primary.main' : 'text.secondary' }}
+            >
+              <Badge badgeContent={unreadCount} color="error">
                 <NotificationsNoneOutlinedIcon />
               </Badge>
             </IconButton>
           </Tooltip>
+
+          {/* Notification Popover Dropdown */}
+          <NotificationPopover
+            anchorEl={notifAnchorEl}
+            open={isNotifOpen}
+            onClose={handleNotificationClose}
+          />
 
           {/* User Menu Trigger */}
           <Box

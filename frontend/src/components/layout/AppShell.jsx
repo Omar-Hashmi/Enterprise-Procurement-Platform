@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Box, Toolbar } from '@mui/material';
 import Navbar from './Navbar';
 import Sidebar from './Sidebar';
+import NotificationToast from '../notifications/NotificationToast';
 
 const DRAWER_WIDTH = 250;
 
@@ -42,6 +43,9 @@ export const AppShell = ({ children }) => {
         <Toolbar sx={{ minHeight: '64px' }} />
         {children}
       </Box>
+
+      {/* Global Real-Time Notification Toast */}
+      <NotificationToast />
     </Box>
   );
 };

@@ -38,25 +38,59 @@ export const USER_ROLES = {
   VENDOR: 'vendor',
 };
 
+export const VENDOR_STATUS = {
+  PENDING: 'pending',
+  ACTIVE: 'active',
+  SUSPENDED: 'suspended',
+  BLACKLISTED: 'blacklisted',
+};
+
+export const APPROVAL_ROLES = [
+  USER_ROLES.DEPARTMENT,
+  USER_ROLES.FINANCE_MANAGER,
+  USER_ROLES.PROCUREMENT_MANAGER,
+  USER_ROLES.CEO,
+];
+
+export const APPROVAL_ROLE_DISPLAY = {
+  department: 'Department Review',
+  finance_manager: 'Finance Manager',
+  procurement_manager: 'Procurement Manager',
+  ceo: 'Chief Executive Officer (CEO)',
+};
+
+export const ROLE_ACTIVE_PR_STATUS = {
+  department: 'Pending',
+  finance_manager: 'Department Approved',
+  procurement_manager: 'Finance Approved',
+  ceo: 'Procurement Approved',
+};
+
+
 export const getStatusColor = (status) => {
-  switch (status) {
-    case 'Approved':
-    case 'Department Approved':
-    case 'Finance Approved':
-    case 'Procurement Approved':
-    case 'CEO Approved':
-    case 'Delivered':
-    case 'Completed':
+  switch (status?.toLowerCase?.()) {
+    case 'approved':
+    case 'department approved':
+    case 'finance approved':
+    case 'procurement approved':
+    case 'ceo approved':
+    case 'delivered':
+    case 'completed':
+    case 'active':
       return 'success';
-    case 'Pending':
-    case 'Issued':
-    case 'In Progress':
+    case 'pending':
+    case 'issued':
+    case 'in progress':
       return 'warning';
-    case 'Rejected':
+    case 'rejected':
+    case 'blacklisted':
       return 'error';
-    case 'Cancelled':
+    case 'suspended':
+      return 'secondary';
+    case 'cancelled':
       return 'default';
     default:
       return 'primary';
   }
 };
+

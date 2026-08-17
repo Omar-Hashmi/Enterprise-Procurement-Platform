@@ -146,6 +146,14 @@ export const CreatePurchaseRequestPage = () => {
     setIsSubmitting(true);
 
     try {
+      // Validate date before converting to ISO string
+      const parsedDate = new Date(formData.requiredDate);
+      if (isNaN(parsedDate.getTime())) {
+        setErrors((prev) => ({ ...prev, requiredDate: 'Please enter a valid required date' }));
+        setIsSubmitting(false);
+        return;
+      }
+
       // Build sanitized backend payload
       const payload = {
         title: formData.title.trim(),
@@ -153,15 +161,16 @@ export const CreatePurchaseRequestPage = () => {
         description: formData.description.trim(),
         quantity: Number(formData.quantity),
         estimatedCost: Number(formData.estimatedCost),
-        requiredDate: new Date(formData.requiredDate).toISOString(),
-        remarks: formData.remarks.trim(),
+        requiredDate: parsedDate.toISOString(),
+        remarks: formData.remarks ? formData.remarks.trim() : '',
       };
 
       const response = await apiClient.post('/purchase-requests', payload);
 
       if (response.status === 201 || response.status === 200) {
-        // Invalidate React Query cache so list refreshes immediately
+        // Invalidate and refetch React Query cache so list updates immediately
         await queryClient.invalidateQueries({ queryKey: ['purchaseRequests'] });
+        await queryClient.refetchQueries({ queryKey: ['purchaseRequests'] });
 
         // Navigate back to list with success state
         navigate('/purchase-requests', {

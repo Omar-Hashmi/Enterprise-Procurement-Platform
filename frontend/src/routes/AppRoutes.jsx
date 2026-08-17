@@ -9,6 +9,14 @@ import ProfilePage from '../pages/ProfilePage';
 import PurchaseRequestsPage from '../pages/PurchaseRequestsPage';
 import CreatePurchaseRequestPage from '../pages/CreatePurchaseRequestPage';
 import PurchaseRequestDetailsPage from '../pages/PurchaseRequestDetailsPage';
+import VendorsPage from '../pages/VendorsPage';
+import CreateVendorPage from '../pages/CreateVendorPage';
+import VendorDetailsPage from '../pages/VendorDetailsPage';
+import ApprovalsPage from '../pages/ApprovalsPage';
+import PurchaseOrdersPage from '../pages/PurchaseOrdersPage';
+import CreatePurchaseOrderPage from '../pages/CreatePurchaseOrderPage';
+import PurchaseOrderDetailsPage from '../pages/PurchaseOrderDetailsPage';
+import AuditLogsPage from '../pages/AuditLogsPage';
 import AppShell from '../components/layout/AppShell';
 import ProtectedRoute from './ProtectedRoute';
 import PublicRoute from './PublicRoute';
@@ -89,6 +97,70 @@ export const AppRoutes = () => {
           element={
             <AppShell>
               <PurchaseRequestDetailsPage />
+            </AppShell>
+          }
+        />
+        <Route
+          path="/approvals"
+          element={
+            <AppShell>
+              <ApprovalsPage />
+            </AppShell>
+          }
+        />
+        <Route
+          path="/purchase-orders"
+          element={
+            <AppShell>
+              <PurchaseOrdersPage />
+            </AppShell>
+          }
+        />
+        <Route
+          path="/purchase-orders/new"
+          element={
+            <AppShell>
+              <CreatePurchaseOrderPage />
+            </AppShell>
+          }
+        />
+        <Route
+          path="/purchase-orders/:id"
+          element={
+            <AppShell>
+              <PurchaseOrderDetailsPage />
+            </AppShell>
+          }
+        />
+        <Route
+          path="/vendors"
+          element={
+            <AppShell>
+              <VendorsPage />
+            </AppShell>
+          }
+        />
+        <Route
+          path="/vendors/new"
+          element={
+            <AppShell>
+              <CreateVendorPage />
+            </AppShell>
+          }
+        />
+        <Route
+          path="/vendors/:id"
+          element={
+            <AppShell>
+              <VendorDetailsPage />
+            </AppShell>
+          }
+        />
+        <Route
+          path="/audit-logs"
+          element={
+            <AppShell>
+              <AuditLogsPage />
             </AppShell>
           }
         />

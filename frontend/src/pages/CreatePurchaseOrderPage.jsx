@@ -24,7 +24,7 @@ import ReceiptLongOutlinedIcon from '@mui/icons-material/ReceiptLongOutlined';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import PageHeader from '../components/common/PageHeader';
-import LoadingState from '../components/feedback/LoadingState';
+import LoadingState from '../components/common/Loading';
 import apiClient from '../lib/api';
 import { useAuthStore } from '../stores/authStore';
 import { USER_ROLES } from '../utils/constants';

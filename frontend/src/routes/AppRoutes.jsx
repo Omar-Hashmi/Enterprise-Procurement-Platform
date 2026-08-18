@@ -9,14 +9,18 @@ import ProfilePage from '../pages/ProfilePage';
 import PurchaseRequestsPage from '../pages/PurchaseRequestsPage';
 import CreatePurchaseRequestPage from '../pages/CreatePurchaseRequestPage';
 import PurchaseRequestDetailsPage from '../pages/PurchaseRequestDetailsPage';
-import VendorsPage from '../pages/VendorsPage';
+import VendorsPage from '../pages/vendor/VendorList';
 import CreateVendorPage from '../pages/CreateVendorPage';
-import VendorDetailsPage from '../pages/VendorDetailsPage';
+import VendorDetailsPage from '../pages/vendor/VendorDetails';
 import ApprovalsPage from '../pages/ApprovalsPage';
 import PurchaseOrdersPage from '../pages/PurchaseOrdersPage';
 import CreatePurchaseOrderPage from '../pages/CreatePurchaseOrderPage';
 import PurchaseOrderDetailsPage from '../pages/PurchaseOrderDetailsPage';
 import AuditLogsPage from '../pages/AuditLogsPage';
+import AnalyticsDashboard from '../pages/analytics/AnalyticsDashboard';
+import ContractList from '../pages/contract/ContractList';
+import InventoryDashboard from '../pages/inventory/InventoryDashboard';
+import BudgetList from '../pages/budget/BudgetList';
 import AppShell from '../components/layout/AppShell';
 import ProtectedRoute from './ProtectedRoute';
 import PublicRoute from './PublicRoute';
@@ -137,6 +141,50 @@ export const AppRoutes = () => {
           element={
             <AppShell>
               <VendorsPage />
+            </AppShell>
+          }
+        />
+        <Route
+          path="/analytics"
+          element={
+            <AppShell>
+              <AnalyticsDashboard />
+            </AppShell>
+          }
+        />
+        <Route
+          path="/contracts"
+          element={
+            <AppShell>
+              <ContractList />
+            </AppShell>
+          }
+        />
+        <Route
+          path="/inventory"
+          element={
+            <AppShell>
+              <InventoryDashboard />
+            </AppShell>
+          }
+        />
+        <Route
+          path="/budgets"
+          element={
+            <AppShell>
+              <BudgetList />
+            </AppShell>
+          }
+        />
+        {/* Debug route to quickly verify the app is rendering */}
+        <Route
+          path="/debug"
+          element={
+            <AppShell>
+              <div style={{ padding: 24 }}>
+                <h2>App running — debug route</h2>
+                <p>This confirms the React tree and routing are working.</p>
+              </div>
             </AppShell>
           }
         />

@@ -31,8 +31,8 @@ import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import SecurityOutlinedIcon from '@mui/icons-material/SecurityOutlined';
 import CalendarTodayOutlinedIcon from '@mui/icons-material/CalendarTodayOutlined';
 import PageHeader from '../components/common/PageHeader';
-import LoadingState from '../components/feedback/LoadingState';
-import ErrorState from '../components/feedback/ErrorState';
+import LoadingState from '../components/common/Loading';
+import ErrorState from '../components/common/ErrorState';
 import apiClient from '../lib/api';
 import { useAuthStore } from '../stores/authStore';
 

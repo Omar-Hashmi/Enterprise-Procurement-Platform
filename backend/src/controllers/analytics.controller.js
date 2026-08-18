@@ -10,8 +10,9 @@ const getIdParam = (req, name = "id") => {
   return value;
 };
 
-const getDashboardSummary = catchAsync(async (_req, res) => {
-  const summary = await analyticsService.getDashboardSummary();
+const getDashboardSummary = catchAsync(async (req, res) => {
+  const fiscalYear = req.query.fiscalYear ? Number(req.query.fiscalYear) : undefined;
+  const summary = await analyticsService.getDashboardSummary(fiscalYear);
   res.status(200).json({ success: true, data: summary });
 });
 
@@ -40,7 +41,8 @@ const getDepartmentSpending = catchAsync(async (req, res) => {
 
 const getProcurementSpendTrend = catchAsync(async (req, res) => {
   const fiscalYear = Number(req.query.fiscalYear) || new Date().getFullYear();
-  const trend = await analyticsService.getProcurementSpendTrend(fiscalYear);
+  const range = ["1M", "6M", "1Y"].includes(req.query.range) ? req.query.range : undefined;
+  const trend = await analyticsService.getProcurementSpendTrend(fiscalYear, range);
   res.status(200).json({ success: true, data: trend });
 });
 

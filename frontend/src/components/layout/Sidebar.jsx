@@ -18,11 +18,15 @@ import StorefrontOutlinedIcon from '@mui/icons-material/StorefrontOutlined';
 import RateReviewOutlinedIcon from '@mui/icons-material/RateReviewOutlined';
 import ShoppingBagOutlinedIcon from '@mui/icons-material/ShoppingBagOutlined';
 import HistoryOutlinedIcon from '@mui/icons-material/HistoryOutlined';
+import BarChartOutlinedIcon from '@mui/icons-material/BarChartOutlined';
+import DescriptionOutlinedIcon from '@mui/icons-material/DescriptionOutlined';
+import Inventory2OutlinedIcon from '@mui/icons-material/Inventory2Outlined';
+import AccountBalanceOutlinedIcon from '@mui/icons-material/AccountBalanceOutlined';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../stores/authStore';
 import { APPROVAL_ROLES, USER_ROLES } from '../../utils/constants';
 
-export const Sidebar = ({ mobileOpen, onMobileClose, drawerWidth }) => {
+export const Sidebar = ({ mobileOpen = false, onMobileClose, drawerWidth = 260 }) => {
   const location = useLocation();
   const navigate = useNavigate();
   const user = useAuthStore((state) => state.user);
@@ -71,6 +75,26 @@ export const Sidebar = ({ mobileOpen, onMobileClose, drawerWidth }) => {
       path: '/vendors',
       icon: <StorefrontOutlinedIcon />,
     },
+    {
+      label: 'Analytics',
+      path: '/analytics',
+      icon: <BarChartOutlinedIcon />,
+    },
+    {
+      label: 'Contracts',
+      path: '/contracts',
+      icon: <DescriptionOutlinedIcon />,
+    },
+    {
+      label: 'Inventory',
+      path: '/inventory',
+      icon: <Inventory2OutlinedIcon />,
+    },
+    {
+      label: 'Budgets',
+      path: '/budgets',
+      icon: <AccountBalanceOutlinedIcon />,
+    },
     ...(isAdmin
       ? [
           {
@@ -89,13 +113,13 @@ export const Sidebar = ({ mobileOpen, onMobileClose, drawerWidth }) => {
 
   const handleNavigate = (path) => {
     navigate(path);
-    if (mobileOpen) {
+    if (mobileOpen && onMobileClose) {
       onMobileClose();
     }
   };
 
   const drawerContent = (
-    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: 'background.paper' }}>
       {/* Brand Header */}
       <Box
         sx={{
@@ -104,7 +128,8 @@ export const Sidebar = ({ mobileOpen, onMobileClose, drawerWidth }) => {
           alignItems: 'center',
           gap: 1.5,
           px: 3,
-          borderBottom: '1px solid #e2e8f0',
+          borderBottom: '1px solid',
+          borderColor: 'divider',
         }}
       >
         <BusinessCenterIcon color="primary" sx={{ fontSize: 28 }} />
@@ -140,11 +165,27 @@ export const Sidebar = ({ mobileOpen, onMobileClose, drawerWidth }) => {
             const isSelected =
               location.pathname === item.path ||
               (item.path !== '/dashboard' && location.pathname.startsWith(item.path + '/'));
+
             return (
               <ListItem key={item.path} disablePadding sx={{ mb: 0.5 }}>
                 <ListItemButton
                   selected={isSelected}
                   onClick={() => handleNavigate(item.path)}
+                  sx={{
+                    borderRadius: 2,
+                    px: 1.5,
+                    py: 1,
+                    '&.Mui-selected': {
+                      backgroundColor: 'primary.light',
+                      color: 'primary.main',
+                      '&:hover': {
+                        backgroundColor: 'primary.light',
+                      },
+                      '& .MuiListItemIcon-root': {
+                        color: 'primary.main',
+                      },
+                    },
+                  }}
                 >
                   <ListItemIcon sx={{ minWidth: 38, color: isSelected ? 'primary.main' : 'text.secondary' }}>
                     {item.icon}
@@ -200,7 +241,12 @@ export const Sidebar = ({ mobileOpen, onMobileClose, drawerWidth }) => {
         variant="permanent"
         sx={{
           display: { xs: 'none', sm: 'block' },
-          '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+          '& .MuiDrawer-paper': {
+            boxSizing: 'border-box',
+            width: drawerWidth,
+            borderRight: '1px solid',
+            borderColor: 'divider',
+          },
         }}
         open
       >

@@ -46,9 +46,9 @@ import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import PageHeader from '../components/common/PageHeader';
-import LoadingState from '../components/feedback/LoadingState';
-import EmptyState from '../components/feedback/EmptyState';
-import ErrorState from '../components/feedback/ErrorState';
+import LoadingState from '../components/common/Loading';
+import EmptyState from '../components/common/EmptyState';
+import ErrorState from '../components/common/ErrorState';
 import apiClient from '../lib/api';
 import { useAuthStore } from '../stores/authStore';
 import {

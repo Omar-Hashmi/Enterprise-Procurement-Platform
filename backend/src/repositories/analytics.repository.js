@@ -72,11 +72,26 @@ class AnalyticsRepository {
     }));
   }
 
-  async procurementSpendTrend(fiscalYear) {
+  /**
+   * `range` narrows the trend window to the trailing N months
+   * ('1M' -> 1, '6M' -> 6, '1Y' -> 12). Omit it to return the full
+   * fiscal year.
+   */
+  async procurementSpendTrend(fiscalYear, range) {
+    const RANGE_TO_MONTHS = { "1M": 1, "6M": 6, "1Y": 12 };
+    const months = RANGE_TO_MONTHS[range];
+
+    const transactionMatch = { "transactions.type": "deduction" };
+    if (months) {
+      const since = new Date();
+      since.setMonth(since.getMonth() - months);
+      transactionMatch["transactions.createdAt"] = { $gte: since };
+    }
+
     const results = await Budget.aggregate([
       { $match: { fiscalYear } },
       { $unwind: "$transactions" },
-      { $match: { "transactions.type": "deduction" } },
+      { $match: transactionMatch },
       {
         $group: {
           _id: { $dateToString: { format: "%Y-%m", date: "$transactions.createdAt" } },

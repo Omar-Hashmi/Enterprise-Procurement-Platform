@@ -15,7 +15,6 @@ import {
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import NotificationsNoneOutlinedIcon from '@mui/icons-material/NotificationsNoneOutlined';
-import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined';
 import BusinessCenterIcon from '@mui/icons-material/BusinessCenter';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import LogoutOutlinedIcon from '@mui/icons-material/LogoutOutlined';
@@ -24,7 +23,7 @@ import { useAuthStore } from '../../stores/authStore';
 import { useNotificationStore } from '../../stores/notificationStore';
 import NotificationPopover from '../notifications/NotificationPopover';
 
-export const Navbar = ({ onMobileNavToggle, drawerWidth }) => {
+export const Navbar = ({ onMobileNavToggle, drawerWidth = 260 }) => {
   const navigate = useNavigate();
   const user = useAuthStore((state) => state.user);
   const clearAuth = useAuthStore((state) => state.clearAuth);
@@ -70,10 +69,15 @@ export const Navbar = ({ onMobileNavToggle, drawerWidth }) => {
   return (
     <AppBar
       position="fixed"
+      color="inherit"
+      elevation={0}
       sx={{
         width: { sm: `calc(100% - ${drawerWidth}px)` },
         ml: { sm: `${drawerWidth}px` },
         zIndex: (theme) => theme.zIndex.drawer + 1,
+        borderBottom: '1px solid',
+        borderColor: 'divider',
+        backgroundColor: 'background.paper',
       }}
     >
       <Toolbar sx={{ minHeight: '64px', px: { xs: 2, sm: 3 } }}>
@@ -88,7 +92,7 @@ export const Navbar = ({ onMobileNavToggle, drawerWidth }) => {
           <MenuIcon />
         </IconButton>
 
-        {/* Brand / Logo on mobile or context header */}
+        {/* Brand / Logo on mobile */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexGrow: 1 }}>
           <Box sx={{ display: { xs: 'flex', sm: 'none' }, alignItems: 'center', gap: 1 }}>
             <BusinessCenterIcon color="primary" />
@@ -169,7 +173,8 @@ export const Navbar = ({ onMobileNavToggle, drawerWidth }) => {
                 minWidth: 200,
                 mt: 1.5,
                 borderRadius: 2,
-                border: '1px solid #e2e8f0',
+                border: '1px solid',
+                borderColor: 'divider',
               },
             }}
             transformOrigin={{ horizontal: 'right', vertical: 'top' }}

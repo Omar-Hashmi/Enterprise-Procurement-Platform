@@ -27,14 +27,27 @@ app.use(helmet());
 app.use(cors());
 app.use(compression());
 app.use(morgan("tiny"));
-app.use(
-    rateLimit({
-        windowMs: 15 * 60 * 1000,
-        max: 1000,
-        standardHeaders: true,
-        legacyHeaders: false,
-    })
-);
+// Apply rate limiting only in production to avoid blocking local development and HMR requests
+if (process.env.NODE_ENV === 'production') {
+    app.use(
+        rateLimit({
+            windowMs: 15 * 60 * 1000,
+            max: 1000,
+            standardHeaders: true,
+            legacyHeaders: false,
+        })
+    );
+} else {
+    // In development, set a very high limit to avoid accidental 429 from dev tooling
+    app.use(
+        rateLimit({
+            windowMs: 15 * 60 * 1000,
+            max: 1000000,
+            standardHeaders: true,
+            legacyHeaders: false,
+        })
+    );
+}
 app.use(express.json());
 
 app.get("/", (req, res) => {

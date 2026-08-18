@@ -10,7 +10,10 @@ export const PublicRoute = ({ children }) => {
   const isAuthed = isAuthenticated && checkAuth();
 
   if (isAuthed) {
-    const destination = location.state?.from?.pathname || '/dashboard';
+    const from = location.state?.from;
+    const destination = from
+      ? `${from.pathname || ''}${from.search || ''}${from.hash || ''}`
+      : '/dashboard';
     return <Navigate to={destination} replace />;
   }
 

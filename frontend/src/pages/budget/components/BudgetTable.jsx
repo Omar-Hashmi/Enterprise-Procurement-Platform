@@ -1,13 +1,9 @@
 import React from 'react';
-import { Paper, Table, TableHead, TableRow, TableCell, TableBody, TableContainer, TablePagination, Box, Typography } from '@mui/material';
+import { Paper, Table, TableHead, TableRow, TableCell, TableBody, TableContainer, TablePagination, Typography, IconButton, Tooltip } from '@mui/material';
+import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 
-const MOCK = [
-  { id: 1, name: 'Marketing', amount: 5000, spent: 1200 },
-  { id: 2, name: 'R&D', amount: 10000, spent: 4200 },
-];
-
-export default function BudgetTable({ budgets = MOCK, page = 0, rowsPerPage = 10, onPageChange, onRowsPerPageChange }) {
-  const display = budgets && budgets.length ? budgets : MOCK;
+export default function BudgetTable({ budgets = [], page = 0, rowsPerPage = 10, onPageChange, onRowsPerPageChange, onEdit }) {
+  const display = budgets;
   const paginated = display.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   return (
@@ -20,19 +16,22 @@ export default function BudgetTable({ budgets = MOCK, page = 0, rowsPerPage = 10
               <TableCell sx={{ fontWeight: 700 }}>Amount</TableCell>
               <TableCell sx={{ fontWeight: 700 }}>Spent</TableCell>
               <TableCell sx={{ fontWeight: 700 }}>Remaining</TableCell>
+              <TableCell align="right" sx={{ fontWeight: 700 }}>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {paginated.map(b => (
               <TableRow key={b.id} hover>
                 <TableCell>
-                  <Typography fontWeight={600}>{b.name}</Typography>
+                  <Typography fontWeight={600}>{b.department?.name || b.department || '—'}</Typography>
                 </TableCell>
-                <TableCell>{b.amount}</TableCell>
-                <TableCell>{b.spent}</TableCell>
-                <TableCell>{b.amount - b.spent}</TableCell>
+                <TableCell>{b.allocatedAmount}</TableCell>
+                <TableCell>{b.spentAmount}</TableCell>
+                <TableCell>{b.remainingAmount}</TableCell>
+                <TableCell align="right"><Tooltip title="Edit budget"><IconButton size="small" color="primary" onClick={() => onEdit?.(b)}><EditOutlinedIcon fontSize="small" /></IconButton></Tooltip></TableCell>
               </TableRow>
             ))}
+            {!paginated.length && <TableRow><TableCell colSpan={4} align="center">No budgets found.</TableCell></TableRow>}
           </TableBody>
         </Table>
       </TableContainer>

@@ -131,8 +131,11 @@ export const LoginPage = () => {
       if (data && data.token) {
         // Store JWT token and derived user state
         setToken(data.token);
-        // Navigate to intended route or default to dashboard
-        const destination = location.state?.from?.pathname || '/dashboard';
+        // Preserve the complete originally requested URL after authentication.
+        const from = location.state?.from;
+        const destination = from
+          ? `${from.pathname || ''}${from.search || ''}${from.hash || ''}`
+          : '/dashboard';
         navigate(destination, { replace: true });
       } else {
         setServerError('Authentication response was missing a valid session token.');

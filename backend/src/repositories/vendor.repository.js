@@ -113,7 +113,38 @@ class VendorRepository {
     if (!Types.ObjectId.isValid(id)) return null;
     const vendor = await Vendor.findById(id).exec();
     if (!vendor) return null;
+    if (bankAccount.isPrimary) vendor.bankAccounts.forEach((account) => { account.isPrimary = false; });
     vendor.bankAccounts.push(bankAccount);
+    await vendor.save();
+    return vendor;
+  }
+
+  async updateBankAccount(id, accountId, bankAccount) {
+    if (!Types.ObjectId.isValid(id) || !Types.ObjectId.isValid(accountId)) return null;
+    const vendor = await Vendor.findById(id).exec();
+    const account = vendor?.bankAccounts.id(accountId);
+    if (!account) return null;
+    Object.assign(account, bankAccount);
+    await vendor.save();
+    return vendor;
+  }
+
+  async deleteBankAccount(id, accountId) {
+    if (!Types.ObjectId.isValid(id) || !Types.ObjectId.isValid(accountId)) return null;
+    const vendor = await Vendor.findById(id).exec();
+    const account = vendor?.bankAccounts.id(accountId);
+    if (!account) return null;
+    account.deleteOne();
+    await vendor.save();
+    return vendor;
+  }
+
+  async setPrimaryBankAccount(id, accountId) {
+    if (!Types.ObjectId.isValid(id) || !Types.ObjectId.isValid(accountId)) return null;
+    const vendor = await Vendor.findById(id).exec();
+    const account = vendor?.bankAccounts.id(accountId);
+    if (!account) return null;
+    vendor.bankAccounts.forEach((item) => { item.isPrimary = item._id.equals(account._id); });
     await vendor.save();
     return vendor;
   }

@@ -1,13 +1,8 @@
 import React from 'react';
 import { Paper, Table, TableHead, TableRow, TableCell, TableBody, TableContainer, TablePagination, Typography } from '@mui/material';
 
-const MOCK = [
-  { id: 1, ref: 'DEL-1001', status: 'Pending', eta: '2026-08-20' },
-  { id: 2, ref: 'DEL-1002', status: 'Received', eta: '2026-08-15' },
-];
-
-export default function DeliveryTable({ deliveries = MOCK, page = 0, rowsPerPage = 10, onPageChange, onRowsPerPageChange }) {
-  const display = deliveries && deliveries.length ? deliveries : MOCK;
+export default function DeliveryTable({ deliveries = [], page = 0, rowsPerPage = 10, onPageChange, onRowsPerPageChange }) {
+  const display = deliveries;
   const paginated = display.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   return (
@@ -24,11 +19,12 @@ export default function DeliveryTable({ deliveries = MOCK, page = 0, rowsPerPage
           <TableBody>
             {paginated.map(d => (
               <TableRow key={d.id} hover>
-                <TableCell><Typography fontWeight={600}>{d.ref}</Typography></TableCell>
-                <TableCell>{d.status}</TableCell>
-                <TableCell>{d.eta}</TableCell>
+                <TableCell><Typography fontWeight={600}>{d._id || d.id}</Typography></TableCell>
+                <TableCell>{d.deliveryStatus || '—'}</TableCell>
+                <TableCell>{d.expectedDeliveryDate ? new Date(d.expectedDeliveryDate).toLocaleDateString() : '—'}</TableCell>
               </TableRow>
             ))}
+            {!paginated.length && <TableRow><TableCell colSpan={3} align="center">No deliveries found.</TableCell></TableRow>}
           </TableBody>
         </Table>
       </TableContainer>

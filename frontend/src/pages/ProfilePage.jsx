@@ -18,6 +18,11 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
 } from '@mui/material';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
@@ -35,10 +40,13 @@ import LoadingState from '../components/common/Loading';
 import ErrorState from '../components/common/ErrorState';
 import apiClient from '../lib/api';
 import { useAuthStore } from '../stores/authStore';
+import { useNavigate } from 'react-router-dom';
 
 export const ProfilePage = () => {
   const storeUser = useAuthStore((state) => state.user);
   const setUser = useAuthStore((state) => state.setUser);
+  const clearAuth = useAuthStore((state) => state.clearAuth);
+  const navigate = useNavigate();
 
   // Profile data fetching state
   const [profileData, setProfileData] = useState(null);
@@ -61,6 +69,9 @@ export const ProfilePage = () => {
   const [isSubmittingPassword, setIsSubmittingPassword] = useState(false);
   const [changePasswordError, setChangePasswordError] = useState('');
   const [changePasswordSuccess, setChangePasswordSuccess] = useState('');
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false);
+  const [deleteAccountError, setDeleteAccountError] = useState('');
 
   const fetchUserProfile = async () => {
     setIsFetchingProfile(true);
@@ -194,6 +205,20 @@ export const ProfilePage = () => {
       }
     } finally {
       setIsSubmittingPassword(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    const id = profileData?._id || profileData?.id || profileData?.userId || storeUser?._id || storeUser?.id || storeUser?.userId;
+    if (!id) { setDeleteAccountError('Your account identifier could not be found. Please contact an administrator.'); return; }
+    setIsDeletingAccount(true); setDeleteAccountError('');
+    try {
+      await apiClient.delete(`/users/${id}`);
+      clearAuth();
+      navigate('/login', { replace: true });
+    } catch (err) {
+      setDeleteAccountError(err.response?.data?.message || 'Unable to delete your account. Please try again.');
+      setIsDeletingAccount(false);
     }
   };
 
@@ -502,10 +527,27 @@ export const ProfilePage = () => {
                   )}
                 </Button>
               </Box>
+              <Divider sx={{ my: 3 }} />
+              <Box sx={{ p: 2, border: '1px solid', borderColor: 'error.main', borderRadius: 2, bgcolor: 'error.main', color: 'error.contrastText', opacity: 0.95 }}>
+                <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 0.5 }}>Delete account</Typography>
+                <Typography variant="body2" sx={{ mb: 1.5, color: 'inherit' }}>Deactivate your account and sign out from this device. This action needs confirmation.</Typography>
+                <Button variant="outlined" color="inherit" size="small" onClick={() => setDeleteDialogOpen(true)} sx={{ borderColor: 'currentColor' }}>Delete my account</Button>
+              </Box>
             </CardContent>
           </Card>
         </Grid>
       </Grid>
+      <Dialog open={deleteDialogOpen} onClose={() => !isDeletingAccount && setDeleteDialogOpen(false)}>
+        <DialogTitle>Delete your account?</DialogTitle>
+        <DialogContent>
+          <DialogContentText>This will deactivate your account and immediately sign you out. You may need an administrator to reactivate it later.</DialogContentText>
+          {deleteAccountError && <Alert severity="error" sx={{ mt: 2 }}>{deleteAccountError}</Alert>}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteDialogOpen(false)} disabled={isDeletingAccount}>Cancel</Button>
+          <Button color="error" variant="contained" onClick={handleDeleteAccount} disabled={isDeletingAccount}>{isDeletingAccount ? 'Deleting…' : 'Delete account'}</Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

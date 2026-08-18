@@ -39,25 +39,25 @@ router.use(protect);
 // Budget Warnings — over-threshold budgets, must come before /:id
 router.get(
   "/warnings",
-  restrictTo("procurement_officer", "finance_officer", "admin"),
+  restrictTo("procurement_officer", "finance_manager", "finance_officer", "admin"),
   getBudgetWarnings
 );
 
 router.get(
   "/status-summary",
-  restrictTo("procurement_officer", "finance_officer", "admin"),
+  restrictTo("procurement_officer", "finance_manager", "finance_officer", "admin"),
   getBudgetStatusSummary
 );
 
 router
   .route("/")
   .get(
-    restrictTo("procurement_officer", "finance_officer", "department_manager", "admin"),
+    restrictTo("procurement_officer", "finance_manager", "finance_officer", "department_manager", "admin"),
     validateListBudgetsQuery,
     getBudgets
   )
   .post(
-    restrictTo("finance_officer", "admin"),
+    restrictTo("finance_manager", "finance_officer", "admin"),
     validateCreateBudget,
     createBudget
   );
@@ -65,12 +65,12 @@ router
 router
   .route("/:id")
   .get(
-    restrictTo("procurement_officer", "finance_officer", "department_manager", "admin"),
+    restrictTo("procurement_officer", "finance_manager", "finance_officer", "department_manager", "admin"),
     validateBudgetIdParam,
     getBudgetById
   )
   .patch(
-    restrictTo("finance_officer", "admin"),
+    restrictTo("finance_manager", "finance_officer", "admin"),
     validateBudgetIdParam,
     validateUpdateBudget,
     updateBudget
@@ -86,7 +86,7 @@ router.get(
 
 router.post(
   "/:id/top-up",
-  restrictTo("finance_officer", "admin"),
+  restrictTo("finance_manager", "finance_officer", "admin"),
   validateBudgetIdParam,
   validateTopUpBudget,
   topUpBudget
@@ -110,7 +110,7 @@ router.post(
 
 router.post(
   "/:id/expense",
-  restrictTo("finance_officer", "admin"),
+  restrictTo("finance_manager", "finance_officer", "admin"),
   validateBudgetIdParam,
   validateRecordExpense,
   recordExpense
@@ -118,7 +118,7 @@ router.post(
 
 router.post(
   "/:id/adjust",
-  restrictTo("finance_officer", "admin"),
+  restrictTo("finance_manager", "finance_officer", "admin"),
   validateBudgetIdParam,
   validateAdjustBudget,
   adjustBudget
@@ -126,7 +126,7 @@ router.post(
 
 router.patch(
   "/:id/close",
-  restrictTo("finance_officer", "admin"),
+  restrictTo("finance_manager", "finance_officer", "admin"),
   validateBudgetIdParam,
   closeBudget
 );

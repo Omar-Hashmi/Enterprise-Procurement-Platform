@@ -1,18 +1,19 @@
-import React, { useEffect, useState } from 'react';
-import { Box, Breadcrumbs, Link, Typography, Card, CardContent, Grid, Button } from '@mui/material';
+import React, { useState } from 'react';
+import { Box, Breadcrumbs, Link, Typography, Card, CardContent, Grid, Button, Alert, CircularProgress } from '@mui/material';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import BudgetTable from './components/BudgetTable';
 import BudgetSummary from './components/BudgetSummary';
 import BudgetWarnings from './components/BudgetWarnings';
 import AddIcon from '@mui/icons-material/Add';
+import { useBudget } from '../../hooks/useBudget';
 
 export default function BudgetList() {
   const navigate = useNavigate();
-  const [budgets] = useState([]);
-
-  useEffect(() => {
-    // fetch budgets when integrating with API
-  }, []);
+  const { budgets, isLoading, error, fetchBudgets } = useBudget();
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const total = budgets.reduce((sum, budget) => sum + Number(budget.allocatedAmount || 0), 0);
+  const spent = budgets.reduce((sum, budget) => sum + Number(budget.spentAmount || 0), 0);
 
   return (
     <Box sx={{ p: { xs: 2, sm: 3 }, maxWidth: 1200, margin: '0 auto' }}>
@@ -37,7 +38,7 @@ export default function BudgetList() {
         <Grid item xs={12} md={4}>
           <Card variant="outlined">
             <CardContent>
-              <BudgetSummary />
+              <BudgetSummary total={total} spent={spent} />
             </CardContent>
           </Card>
         </Grid>
@@ -46,7 +47,8 @@ export default function BudgetList() {
         </Grid>
       </Grid>
 
-      <BudgetTable budgets={budgets} />
+      {error && <Alert severity="error" action={<Button color="inherit" size="small" onClick={fetchBudgets}>Retry</Button>} sx={{ mb: 2 }}>{error}</Alert>}
+      {isLoading ? <Box sx={{ display: 'flex', justifyContent: 'center', p: 4 }}><CircularProgress aria-label="Loading budgets" /></Box> : <BudgetTable budgets={budgets} page={page} rowsPerPage={rowsPerPage} onPageChange={(event, nextPage) => setPage(nextPage)} onRowsPerPageChange={(event) => { setRowsPerPage(Number(event.target.value)); setPage(0); }} onEdit={(budget) => navigate(`/budgets/${budget._id || budget.id}/edit`)} />}
     </Box>
   );
 }

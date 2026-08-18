@@ -16,6 +16,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import SaveIcon from '@mui/icons-material/Save';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { useInventory } from '../../hooks/useInventory';
+import apiClient from '../../lib/api';
 
 const INITIAL_FORM_STATE = {
   purchaseOrder: '',
@@ -52,44 +53,10 @@ export const CreateInventory = () => {
     if (!validate()) return;
     setIsLoading(true);
     try {
-      // Prefer hook/repository if available, otherwise call API
-      if (handleAddItem) {
-        // Add a lightweight delivery record via API to keep data consistent with backend
-        await fetch('/api/inventory', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            purchaseOrder: formData.purchaseOrder,
-            warehouse: formData.warehouse,
-            expectedDeliveryDate: formData.expectedDeliveryDate,
-            notes: formData.notes,
-          }),
-        });
-        // locally update sample inventory list if desired
-        handleAddItem({
-          sku: formData.purchaseOrder,
-          name: 'Delivery - ' + formData.purchaseOrder,
-          category: 'Received',
-          quantity: 0,
-          minStockThreshold: 0,
-          unitPrice: 0,
-          location: formData.warehouse,
-        });
-      } else {
-        await fetch('/api/inventory', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            purchaseOrder: formData.purchaseOrder,
-            warehouse: formData.warehouse,
-            expectedDeliveryDate: formData.expectedDeliveryDate,
-            notes: formData.notes,
-          }),
-        });
-      }
+      await apiClient.post('/inventory', formData);
       navigate('/inventory');
     } catch (err) {
-      setApiError(err.message || 'Failed to create inventory record');
+      setApiError(err.response?.data?.message || err.message || 'Failed to create inventory record');
     } finally {
       setIsLoading(false);
     }

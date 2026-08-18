@@ -2,8 +2,8 @@
   --bg: #f6f8fa;
   --muted: #6b7280;
 }
-html,body,#root{height:100%;}
-body{margin:0;font-family:Inter, Roboto, Arial, sans-serif;background:var(--bg);}
+html,body,#root{height:100%; min-width: 0;}
+body{margin:0;font-family:Inter, Roboto, Arial, sans-serif;background:var(--bg); overflow-x:hidden;}
 
 .app-container{max-width:1200px;margin:0 auto;padding:16px}
 *,
@@ -23,5 +23,12 @@ body,
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background-color: #f8fafc;
-  color: #0f172a;
+  color: inherit;
+  transition: background-color 180ms ease, color 180ms ease;
+}
+
+img, svg, canvas { max-width: 100%; }
+.MuiTableContainer-root { max-width: 100%; overflow-x: auto; }
+@media (max-width: 599px) {
+  .MuiDialog-paper { margin: 12px !important; width: calc(100% - 24px) !important; }
 }

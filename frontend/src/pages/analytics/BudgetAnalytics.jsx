@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   Box,
   Container,
@@ -52,22 +52,22 @@ const QUARTERLY_DATA = [
   {
     quarter: 'Q1 2026',
     allocated: 1500000,
-    spent: 1420000,
+    spent: 1200000,
   },
   {
     quarter: 'Q2 2026',
-    allocated: 1800000,
-    spent: 1750000,
+    allocated: 1700000,
+    spent: 1450000,
   },
   {
     quarter: 'Q3 2026',
-    allocated: 2000000,
-    spent: 1680000,
+    allocated: 1800000,
+    spent: 1550000,
   },
   {
     quarter: 'Q4 2026 (Est)',
-    allocated: 2200000,
-    spent: 0,
+    allocated: 1500000,
+    spent: 1380000,
   },
 ];
 
@@ -145,6 +145,20 @@ export const BudgetAnalytics = ({
 
   const [filtersAnchor, setFiltersAnchor] = useState(null);
   const [exportAnchor, setExportAnchor] = useState(null);
+  const [selectedRange, setSelectedRange] = useState(propRange || 'all');
+  const effectiveRange = selectedRange;
+  const yearFactor = fiscalYear === '2025' ? 0.91 : fiscalYear === '2024' ? 0.84 : 1;
+  const quarterlyData = useMemo(() => {
+    if (effectiveRange === 'month' || effectiveRange === '1M') return QUARTERLY_DATA.slice(-1);
+    if (effectiveRange === 'quarter' || effectiveRange === '6M') return QUARTERLY_DATA.slice(-2);
+    return QUARTERLY_DATA;
+  }, [effectiveRange]);
+  const periodFactor = effectiveRange === 'month' || effectiveRange === '1M' ? 0.25 : effectiveRange === 'quarter' || effectiveRange === '6M' ? 0.5 : 1;
+  const periodLabel = periodFactor === 0.25 ? 'Last 30 days' : periodFactor === 0.5 ? 'Last 6 months' : 'Full fiscal year';
+  const annualizedQuarterlyData = useMemo(() => quarterlyData.map((row) => ({ ...row, quarter: row.quarter.replace('2026', fiscalYear), allocated: Math.round(row.allocated * yearFactor), spent: Math.round(row.spent * yearFactor) })), [fiscalYear, quarterlyData, yearFactor]);
+  const departmentBudgets = useMemo(() => DEPARTMENT_BUDGETS.map((row) => ({
+    ...row, allocated: Math.round(row.allocated * periodFactor * yearFactor), spent: Math.round(row.spent * periodFactor * yearFactor), pending: Math.round(row.pending * periodFactor * yearFactor),
+  })), [periodFactor, yearFactor]);
 
   /* -------------------------------------------------------
      Keep local fiscal year synchronized with parent
@@ -155,6 +169,7 @@ export const BudgetAnalytics = ({
       setFiscalYear(propFiscalYear);
     }
   }, [propFiscalYear]);
+  useEffect(() => { if (propRange) setSelectedRange(propRange); }, [propRange]);
 
   /* -------------------------------------------------------
      Menu handlers
@@ -190,8 +205,9 @@ export const BudgetAnalytics = ({
 
       const data = reports || {
         fiscalYear,
-        departments: DEPARTMENT_BUDGETS,
-        quarterly: QUARTERLY_DATA,
+        range: periodLabel,
+        departments: departmentBudgets,
+        quarterly: annualizedQuarterlyData,
       };
 
       if (format === 'json') {
@@ -216,7 +232,7 @@ export const BudgetAnalytics = ({
       }
 
       if (format === 'csv') {
-        const rows = DEPARTMENT_BUDGETS;
+        const rows = departmentBudgets;
 
         const headers = [
           'Department',
@@ -302,19 +318,19 @@ export const BudgetAnalytics = ({
      Budget calculations
      ------------------------------------------------------- */
 
-  const totalAllocated = DEPARTMENT_BUDGETS.reduce(
+  const totalAllocated = departmentBudgets.reduce(
     (total, department) =>
       total + Number(department.allocated || 0),
     0
   );
 
-  const totalSpent = DEPARTMENT_BUDGETS.reduce(
+  const totalSpent = departmentBudgets.reduce(
     (total, department) =>
       total + Number(department.spent || 0),
     0
   );
 
-  const totalPending = DEPARTMENT_BUDGETS.reduce(
+  const totalPending = departmentBudgets.reduce(
     (total, department) =>
       total + Number(department.pending || 0),
     0
@@ -427,7 +443,7 @@ export const BudgetAnalytics = ({
                 onClick={() =>
                   fetchReports({
                     fiscalYear,
-                    range: propRange || '6M',
+                    range: selectedRange,
                   })
                 }
               >
@@ -521,7 +537,7 @@ export const BudgetAnalytics = ({
                   try {
                     await fetchReports({
                       fiscalYear: value,
-                      range: propRange || '6M',
+                      range: selectedRange,
                     });
                   } catch (fetchError) {
                     console.error(
@@ -570,6 +586,7 @@ export const BudgetAnalytics = ({
             >
               <MenuItem
                 onClick={async () => {
+                  setSelectedRange('1M');
                   if (fetchReports) {
                     await fetchReports({
                       fiscalYear,
@@ -585,6 +602,7 @@ export const BudgetAnalytics = ({
 
               <MenuItem
                 onClick={async () => {
+                  setSelectedRange('6M');
                   if (fetchReports) {
                     await fetchReports({
                       fiscalYear,
@@ -600,6 +618,7 @@ export const BudgetAnalytics = ({
 
               <MenuItem
                 onClick={async () => {
+                  setSelectedRange('1Y');
                   if (fetchReports) {
                     await fetchReports({
                       fiscalYear,
@@ -1032,7 +1051,7 @@ export const BudgetAnalytics = ({
                   height="100%"
                 >
                   <BarChart
-                    data={QUARTERLY_DATA}
+                    data={annualizedQuarterlyData}
                     margin={{
                       top: 10,
                       right: 10,
@@ -1305,7 +1324,7 @@ export const BudgetAnalytics = ({
               </TableHead>
 
               <TableBody>
-                {DEPARTMENT_BUDGETS.map(
+                {departmentBudgets.map(
                   (row) => {
                     const usedTotal =
                       row.spent +

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   Box,
   Container,
@@ -18,9 +18,9 @@ import {
   TableContainer,
   TableHead,
   TableRow,
-  LinearProgress,
   Avatar,
   Rating,
+  Alert,
 } from '@mui/material';
 import StorefrontIcon from '@mui/icons-material/Storefront';
 import LocalShippingIcon from '@mui/icons-material/LocalShipping';
@@ -112,7 +112,7 @@ const VENDOR_DETAILS_TABLE = [
   },
 ];
 
-export const VendorAnalytics = () => {
+export const VendorAnalytics = ({ period = 'all' }) => {
   const [vendorCategory, setVendorCategory] = useState('ALL');
 
   const currency = 'PKR';
@@ -122,11 +122,11 @@ export const VendorAnalytics = () => {
       style: 'currency',
       currency,
       maximumFractionDigits: 0,
-    }).format(amount);
+    }).format(amount || 0);
   };
 
   const getRiskChipColor = (risk) => {
-    switch (risk.toLowerCase()) {
+    switch ((risk || '').toLowerCase()) {
       case 'low':
         return 'success';
       case 'medium':
@@ -138,6 +138,30 @@ export const VendorAnalytics = () => {
     }
   };
 
+  const categoryMatches = (vendorName, category) => {
+    if (vendorCategory === 'ALL') return true;
+    const name = String(vendorName || '');
+    if (category === 'LOGISTICS') return /Apex|FastPack/i.test(name);
+    if (category === 'IT') return /Global Tech|Nexus Office/i.test(name);
+    if (category === 'LAB') return /BioChem/i.test(name);
+    return false;
+  };
+
+  // Filtered dataset wrappers: every chart and the scorecard share the same category filter.
+  const performanceData = useMemo(() => {
+    return Array.isArray(VENDOR_PERFORMANCE_SCORES) ? VENDOR_PERFORMANCE_SCORES.filter((row) => categoryMatches(row.vendor, vendorCategory)) : [];
+  }, [vendorCategory]);
+
+  const riskData = useMemo(() => {
+    return Array.isArray(RISK_MATRIX_DATA) ? RISK_MATRIX_DATA.filter((row) => categoryMatches(row.name, vendorCategory)) : [];
+  }, [vendorCategory]);
+
+  const tableData = useMemo(() => {
+    return Array.isArray(VENDOR_DETAILS_TABLE) ? VENDOR_DETAILS_TABLE.filter((row) => categoryMatches(row.name, vendorCategory)) : [];
+  }, [vendorCategory]);
+
+  const periodLabel = period === 'month' ? 'this month' : period === 'quarter' ? 'this quarter' : period === 'year' ? 'this year' : 'year to date';
+
   return (
     <Box sx={{ py: 3, bgcolor: 'background.default', minHeight: '100vh' }}>
       <Container maxWidth="xl">
@@ -146,7 +170,7 @@ export const VendorAnalytics = () => {
           sx={{
             display: 'flex',
             flexDirection: { xs: 'column', sm: 'row' },
-            justifyContent: 'space-between',
+            justify: 'space-between',
             alignItems: { xs: 'flex-start', sm: 'center' },
             gap: 2,
             mb: 3,
@@ -174,8 +198,8 @@ export const VendorAnalytics = () => {
               <MenuItem value="LOGISTICS">Freight & Express</MenuItem>
               <MenuItem value="LAB">Lab Supplies</MenuItem>
             </TextField>
-            <Button variant="outlined" size="small" startIcon={<FilterListIcon />} sx={{ bgcolor: 'background.paper' }}>
-              Filters
+            <Button variant="outlined" size="small" startIcon={<FilterListIcon />} onClick={() => setVendorCategory('ALL')} sx={{ bgcolor: 'background.paper' }}>
+              Reset
             </Button>
             <Button variant="contained" size="small" startIcon={<DownloadIcon />} disableElevation>
               Export
@@ -278,22 +302,30 @@ export const VendorAnalytics = () => {
                   Top Suppliers: On-Time Delivery vs. Quality Acceptance
                 </Typography>
                 <Typography variant="caption" color="text.secondary">
-                  Percentage benchmark of top 5 suppliers by overall spend volume.
+                  Percentage benchmark for {periodLabel}, filtered by the selected supplier category.
                 </Typography>
               </Box>
 
               <Box sx={{ width: '100%', height: 300 }}>
-                <ResponsiveContainer>
-                  <BarChart data={VENDOR_PERFORMANCE_SCORES} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                    <XAxis dataKey="vendor" />
-                    <YAxis domain={[70, 100]} tickFormatter={(v) => `${v}%`} />
-                    <RechartsTooltip formatter={(val) => `${val}%`} />
-                    <Legend />
-                    <Bar dataKey="onTime" name="On-Time Delivery %" fill="#1976d2" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="quality" name="Quality Rating %" fill="#2e7d32" radius={[4, 4, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
+                {performanceData.length > 0 ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={performanceData} margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                      <XAxis dataKey="vendor" />
+                      <YAxis domain={[70, 100]} tickFormatter={(v) => `${v}%`} />
+                      <RechartsTooltip formatter={(val) => `${val}%`} />
+                      <Legend />
+                      <Bar dataKey="onTime" name="On-Time Delivery %" fill="#1976d2" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="quality" name="Quality Rating %" fill="#2e7d32" radius={[4, 4, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+                    <Alert severity="info" variant="outlined">
+                      No vendor performance metric data available.
+                    </Alert>
+                  </Box>
+                )}
               </Box>
             </Paper>
           </Grid>
@@ -311,23 +343,31 @@ export const VendorAnalytics = () => {
               </Box>
 
               <Box sx={{ width: '100%', height: 300 }}>
-                <ResponsiveContainer>
-                  <ScatterChart margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis type="number" dataKey="riskScore" name="Risk Score" unit=" pt" domain={[0, 40]} />
-                    <YAxis type="number" dataKey="qualityScore" name="Quality" unit="%" domain={[80, 100]} />
-                    <ZAxis type="number" dataKey="spend" range={[100, 500]} name="Spend (K)" />
-                    <RechartsTooltip cursor={{ strokeDasharray: '3 3' }} />
-                    <Scatter name="Suppliers" data={RISK_MATRIX_DATA} fill="#00abc5">
-                      {RISK_MATRIX_DATA.map((entry, index) => (
-                        <Cell
-                          key={`cell-${index}`}
-                          fill={entry.riskScore > 30 ? '#d32f2f' : entry.riskScore > 15 ? '#ed6c02' : '#2e7d32'}
-                        />
-                      ))}
-                    </Scatter>
-                  </ScatterChart>
-                </ResponsiveContainer>
+                {riskData.length > 0 ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <ScatterChart margin={{ top: 10, right: 10, left: -10, bottom: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis type="number" dataKey="riskScore" name="Risk Score" unit=" pt" domain={[0, 40]} />
+                      <YAxis type="number" dataKey="qualityScore" name="Quality" unit="%" domain={[80, 100]} />
+                      <ZAxis type="number" dataKey="spend" range={[100, 500]} name="Spend (K)" />
+                      <RechartsTooltip cursor={{ strokeDasharray: '3 3' }} />
+                      <Scatter name="Suppliers" data={riskData} fill="#00abc5">
+                        {riskData.map((entry, index) => (
+                          <Cell
+                            key={`cell-${index}`}
+                            fill={entry.riskScore > 30 ? '#d32f2f' : entry.riskScore > 15 ? '#ed6c02' : '#2e7d32'}
+                          />
+                        ))}
+                      </Scatter>
+                    </ScatterChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+                    <Alert severity="info" variant="outlined">
+                      No risk distribution metrics available.
+                    </Alert>
+                  </Box>
+                )}
               </Box>
             </Paper>
           </Grid>
@@ -358,60 +398,78 @@ export const VendorAnalytics = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {VENDOR_DETAILS_TABLE.map((row) => (
-                  <TableRow key={row.id} hover>
-                    <TableCell>
-                      <Stack direction="row" alignItems="center" spacing={1.5}>
-                        <Avatar sx={{ width: 28, height: 28, fontSize: '0.75rem', bgcolor: 'primary.main' }}>
-                          {row.name.charAt(0)}
-                        </Avatar>
-                        <Box>
-                          <Typography variant="body2" fontWeight={600}>
-                            {row.name}
+                {tableData.length > 0 ? (
+                  tableData.map((row) => (
+                    <TableRow key={row.id} hover>
+                      <TableCell>
+                        <Stack direction="row" alignItems="center" spacing={1.5}>
+                          <Avatar sx={{ width: 28, height: 28, fontSize: '0.75rem', bgcolor: 'primary.main' }}>
+                            {row.name ? row.name.charAt(0) : 'V'}
+                          </Avatar>
+                          <Box>
+                            <Typography variant="body2" fontWeight={600}>
+                              {row.name || 'Unnamed Vendor'}
+                            </Typography>
+                            <Typography variant="caption" color="text.secondary">
+                              {row.id}
+                            </Typography>
+                          </Box>
+                        </Stack>
+                      </TableCell>
+                      <TableCell>
+                        <Chip label={row.category || 'N/A'} size="small" variant="outlined" />
+                      </TableCell>
+                      <TableCell>
+                        <Stack direction="row" alignItems="center" spacing={0.5}>
+                          <Rating value={row.rating || 0} precision={0.1} size="small" readOnly />
+                          <Typography variant="caption" fontWeight={600}>
+                            ({row.rating || 0})
                           </Typography>
-                          <Typography variant="caption" color="text.secondary">
-                            {row.id}
-                          </Typography>
-                        </Box>
-                      </Stack>
-                    </TableCell>
-                    <TableCell>
-                      <Chip label={row.category} size="small" variant="outlined" />
-                    </TableCell>
-                    <TableCell>
-                      <Stack direction="row" alignItems="center" spacing={0.5}>
-                        <Rating value={row.rating} precision={0.1} size="small" readOnly />
-                        <Typography variant="caption" fontWeight={600}>
-                          ({row.rating})
+                        </Stack>
+                      </TableCell>
+                      <TableCell align="center">
+                        <Typography
+                          variant="body2"
+                          fontWeight={600}
+                          color={row.onTimeDelivery >= 90 ? 'success.main' : 'warning.main'}
+                        >
+                          {row.onTimeDelivery ?? 0}%
                         </Typography>
-                      </Stack>
-                    </TableCell>
-                    <TableCell align="center">
-                      <Typography variant="body2" fontWeight={600} color={row.onTimeDelivery >= 90 ? 'success.main' : 'warning.main'}>
-                        {row.onTimeDelivery}%
+                      </TableCell>
+                      <TableCell align="center">
+                        <Typography
+                          variant="body2"
+                          fontWeight={600}
+                          color={row.defectRate > 2.0 ? 'error.main' : 'text.primary'}
+                        >
+                          {row.defectRate ?? 0}%
+                        </Typography>
+                      </TableCell>
+                      <TableCell align="right">
+                        <Typography variant="body2" fontWeight={600}>
+                          {formatCurrency(row.totalSpent)}
+                        </Typography>
+                      </TableCell>
+                      <TableCell align="center">
+                        <Chip
+                          label={row.riskLevel || 'Unknown'}
+                          size="small"
+                          color={getRiskChipColor(row.riskLevel)}
+                          variant="outlined"
+                          sx={{ fontWeight: 600 }}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={7} align="center" sx={{ py: 3 }}>
+                      <Typography variant="body2" color="text.secondary">
+                        No vendor records found.
                       </Typography>
-                    </TableCell>
-                    <TableCell align="center">
-                      <Typography variant="body2" fontWeight={600} color={row.defectRate > 2.0 ? 'error.main' : 'text.primary'}>
-                        {row.defectRate}%
-                      </Typography>
-                    </TableCell>
-                    <TableCell align="right">
-                      <Typography variant="body2" fontWeight={600}>
-                        {formatCurrency(row.totalSpent)}
-                      </Typography>
-                    </TableCell>
-                    <TableCell align="center">
-                      <Chip
-                        label={row.riskLevel}
-                        size="small"
-                        color={getRiskChipColor(row.riskLevel)}
-                        variant="soft"
-                        sx={{ fontWeight: 600 }}
-                      />
                     </TableCell>
                   </TableRow>
-                ))}
+                )}
               </TableBody>
             </Table>
           </TableContainer>

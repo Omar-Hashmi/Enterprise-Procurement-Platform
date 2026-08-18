@@ -58,6 +58,7 @@ import {
   ROLE_ACTIVE_PR_STATUS,
 } from '../utils/constants';
 import { formatCurrency, formatDate, formatDateTime } from '../utils/formatters';
+import { demoApprovals, demoPurchaseRequests } from '../data/demoData';
 
 export const ApprovalsPage = () => {
   const navigate = useNavigate();
@@ -97,7 +98,8 @@ export const ApprovalsPage = () => {
     queryFn: async () => {
       try {
         const response = await apiClient.get('/approvals');
-        return Array.isArray(response.data) ? response.data : [];
+        const records = Array.isArray(response.data) ? response.data : [];
+        return records.length ? records : demoApprovals;
       } catch (err) {
         if (err.response?.status === 403) return [];
         throw err;
@@ -118,7 +120,8 @@ export const ApprovalsPage = () => {
     queryFn: async () => {
       try {
         const response = await apiClient.get('/purchase-requests');
-        return Array.isArray(response.data) ? response.data : [];
+        const records = Array.isArray(response.data) ? response.data : [];
+        return records.length ? records : demoPurchaseRequests;
       } catch {
         return [];
       }

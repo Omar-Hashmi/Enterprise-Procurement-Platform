@@ -13,6 +13,9 @@ const {
   rateVendor,
   addCertification,
   addBankAccount,
+  updateBankAccount,
+  deleteBankAccount,
+  setPrimaryBankAccount,
   getVendorCategories,
   createVendorCategory,
   getVendorStatusSummary,
@@ -26,6 +29,8 @@ const {
   validateRateVendor,
   validateAddCertification,
   validateAddBankAccount,
+  validateUpdateBankAccount,
+  validateBankAccountIdParam,
   validateCreateVendorCategory,
 } = require("../validations/vendor.validation");
 
@@ -77,6 +82,9 @@ router.post(
   validateRateVendor,
   rateVendor
 );
+router.patch("/:id/bank-accounts/:accountId", restrictTo("procurement_officer", "admin"), validateBankAccountIdParam, validateUpdateBankAccount, updateBankAccount);
+router.delete("/:id/bank-accounts/:accountId", restrictTo("procurement_officer", "admin"), validateBankAccountIdParam, deleteBankAccount);
+router.patch("/:id/bank-accounts/:accountId/primary", restrictTo("procurement_officer", "admin"), validateBankAccountIdParam, setPrimaryBankAccount);
 
 router.post(
   "/:id/certifications",

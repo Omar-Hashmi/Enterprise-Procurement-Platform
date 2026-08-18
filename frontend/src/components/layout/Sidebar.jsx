@@ -119,17 +119,18 @@ export const Sidebar = ({ mobileOpen = false, onMobileClose, drawerWidth = 260 }
   };
 
   const drawerContent = (
-    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: 'background.paper' }}>
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%', color: 'text.primary', overflow: 'hidden' }}>
       {/* Brand Header */}
       <Box
         sx={{
-          height: 64,
+          minHeight: 76,
           display: 'flex',
           alignItems: 'center',
           gap: 1.5,
           px: 3,
-          borderBottom: '1px solid',
-          borderColor: 'divider',
+          background: (theme) => theme.palette.mode === 'dark'
+            ? 'linear-gradient(135deg, rgba(14,165,233,.18), transparent 60%)'
+            : 'linear-gradient(135deg, rgba(14,165,233,.12), transparent 60%)',
         }}
       >
         <BusinessCenterIcon color="primary" sx={{ fontSize: 28 }} />
@@ -144,11 +145,11 @@ export const Sidebar = ({ mobileOpen = false, onMobileClose, drawerWidth = 260 }
       </Box>
 
       {/* Navigation List */}
-      <Box sx={{ flexGrow: 1, p: 2 }}>
+      <Box sx={{ flexGrow: 1, p: 1.5, overflowY: 'auto' }}>
         <Typography
           variant="caption"
           sx={{
-            px: 1.5,
+            px: 1.25,
             mb: 1,
             display: 'block',
             fontWeight: 600,
@@ -167,19 +168,29 @@ export const Sidebar = ({ mobileOpen = false, onMobileClose, drawerWidth = 260 }
               (item.path !== '/dashboard' && location.pathname.startsWith(item.path + '/'));
 
             return (
-              <ListItem key={item.path} disablePadding sx={{ mb: 0.5 }}>
+              <ListItem key={item.path} disablePadding sx={{ mb: 0.5, position: 'relative' }}>
                 <ListItemButton
                   selected={isSelected}
                   onClick={() => handleNavigate(item.path)}
                   sx={{
-                    borderRadius: 2,
+                    borderRadius: 3,
                     px: 1.5,
                     py: 1,
+                    position: 'relative',
+                    overflow: 'hidden',
+                    transition: 'transform 280ms cubic-bezier(.2,.8,.2,1), background-color 280ms ease, color 220ms ease, box-shadow 280ms ease',
+                    '&::before': {
+                      content: '""', position: 'absolute', left: 0, top: 8, bottom: 8, width: 3,
+                      borderRadius: '0 4px 4px 0', backgroundColor: 'primary.main',
+                      transform: isSelected ? 'scaleY(1)' : 'scaleY(0)', transformOrigin: 'center', transition: 'transform 280ms cubic-bezier(.2,.8,.2,1)',
+                    },
+                    '&:hover': { backgroundColor: 'action.hover', transform: 'translateX(5px)' },
                     '&.Mui-selected': {
-                      backgroundColor: 'primary.light',
+                      backgroundColor: (theme) => theme.palette.mode === 'dark' ? 'rgba(14,165,233,.19)' : 'rgba(14,165,233,.13)',
                       color: 'primary.main',
+                      transform: 'translateX(5px)',
                       '&:hover': {
-                        backgroundColor: 'primary.light',
+                        backgroundColor: 'transparent',
                       },
                       '& .MuiListItemIcon-root': {
                         color: 'primary.main',
@@ -230,7 +241,7 @@ export const Sidebar = ({ mobileOpen = false, onMobileClose, drawerWidth = 260 }
         }}
         sx={{
           display: { xs: 'block', sm: 'none' },
-          '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+          '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth, borderRadius: '0 22px 22px 0' },
         }}
       >
         {drawerContent}
@@ -244,8 +255,14 @@ export const Sidebar = ({ mobileOpen = false, onMobileClose, drawerWidth = 260 }
           '& .MuiDrawer-paper': {
             boxSizing: 'border-box',
             width: drawerWidth,
-            borderRight: '1px solid',
+            left: 16,
+            top: 16,
+            height: 'calc(100% - 32px)',
+            border: '1px solid',
             borderColor: 'divider',
+            borderRadius: 4,
+            boxShadow: (theme) => theme.palette.mode === 'dark' ? '0 18px 44px rgba(0,0,0,.24)' : '0 18px 44px rgba(15,23,42,.07)',
+            overflow: 'hidden',
           },
         }}
         open

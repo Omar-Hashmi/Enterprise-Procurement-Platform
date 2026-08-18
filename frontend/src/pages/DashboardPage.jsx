@@ -35,6 +35,7 @@ import apiClient from '../lib/api';
 import { useAuthStore } from '../stores/authStore';
 import { getStatusColor, PURCHASE_REQUEST_STATUS } from '../utils/constants';
 import { formatCurrency, formatDate } from '../utils/formatters';
+import { demoApprovals, demoPurchaseOrders, demoPurchaseRequests } from '../data/demoData';
 
 export const DashboardPage = () => {
   const navigate = useNavigate();
@@ -57,7 +58,8 @@ export const DashboardPage = () => {
     queryKey: ['purchaseRequests'],
     queryFn: async () => {
       const response = await apiClient.get('/purchase-requests');
-      return Array.isArray(response.data) ? response.data : [];
+      const records = Array.isArray(response.data) ? response.data : [];
+      return records.length ? records : demoPurchaseRequests;
     },
     enabled: canAccessPurchaseRequests,
   });
@@ -72,7 +74,8 @@ export const DashboardPage = () => {
     queryKey: ['approvals'],
     queryFn: async () => {
       const response = await apiClient.get('/approvals');
-      return Array.isArray(response.data) ? response.data : [];
+      const records = Array.isArray(response.data) ? response.data : [];
+      return records.length ? records : demoApprovals;
     },
     enabled: canAccessApprovals,
   });
@@ -87,7 +90,8 @@ export const DashboardPage = () => {
     queryKey: ['purchaseOrders'],
     queryFn: async () => {
       const response = await apiClient.get('/purchase-orders');
-      return Array.isArray(response.data) ? response.data : [];
+      const records = Array.isArray(response.data) ? response.data : [];
+      return records.length ? records : demoPurchaseOrders;
     },
     enabled: canAccessPurchaseOrders,
   });

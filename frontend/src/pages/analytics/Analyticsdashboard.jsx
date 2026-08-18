@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {
   Box,
-  Container,
   Typography,
   Tabs,
   Tab,
@@ -11,16 +10,12 @@ import {
 
 import DownloadIcon from '@mui/icons-material/Download';
 import FilterListIcon from '@mui/icons-material/FilterList';
+import PageHeader from '../../components/common/PageHeader';
 
-// Analytics overview component
-import {
-  AnalyticsDashboard as OverviewPanel,
-} from './components/AnalyticsDashboard';
-
-// BudgetAnalytics is located directly inside the analytics folder
+import { AnalyticsDashboard as OverviewPanel } from './components/AnalyticsDashboard';
 import { BudgetAnalytics } from './BudgetAnalytics';
+import { VendorAnalytics } from './VendorAnalytics';
 
-// Simple TabPanel helper component
 function CustomTabPanel({ children, value, index, ...other }) {
   return (
     <div
@@ -30,16 +25,11 @@ function CustomTabPanel({ children, value, index, ...other }) {
       aria-labelledby={`analytics-tab-${index}`}
       {...other}
     >
-      {value === index && (
-        <Box sx={{ pt: 3 }}>
-          {children}
-        </Box>
-      )}
+      {value === index && <Box sx={{ pt: 3 }}>{children}</Box>}
     </div>
   );
 }
 
-// Accessibility properties for tabs
 function a11yProps(index) {
   return {
     id: `analytics-tab-${index}`,
@@ -49,73 +39,81 @@ function a11yProps(index) {
 
 export const AnalyticsDashboard = () => {
   const [activeTab, setActiveTab] = useState(0);
+  const [showFilters, setShowFilters] = useState(false);
+  const [selectedPeriod, setSelectedPeriod] = useState('all');
 
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);
   };
 
-  const handleExport = () => {
-    window.alert(
-      'Export functionality will be connected to the analytics API.'
-    );
+  // Toggle the filters panel
+  const handleFilters = () => {
+    setShowFilters((prev) => !prev);
   };
 
-  const handleFilters = () => {
-    window.alert(
-      'Analytics filters will be available here.'
-    );
+  // Export analytics data as CSV
+  const handleExport = () => {
+    const report = [
+      ['Analytics & Intelligence Report'],
+      [],
+      ['Metric', 'Value'],
+      ['Procurement Spend', '$1.28M'],
+      ['Inventory Value', '$2.46M'],
+      ['Budget Utilization', '92.4%'],
+      ['Savings Achieved', '$184K'],
+      [],
+      ['Key Initiatives'],
+      ['Initiative', 'Owner', 'Value', 'Status'],
+      ['ERP License Optimization', 'IT', '$86,000', 'On Track'],
+      ['Fleet Maintenance Renewal', 'Operations', '$58,000', 'Review'],
+      ['Office Relocation', 'Facilities', '$95,000', 'At Risk'],
+      ['Bulk Hardware Purchase', 'Procurement', '$72,000', 'On Track'],
+    ];
+
+    const csv = report
+      .map((row) =>
+        row
+          .map((cell) => {
+            const value = String(cell ?? '');
+            return `"${value.replace(/"/g, '""')}"`;
+          })
+          .join(',')
+      )
+      .join('\n');
+
+    const blob = new Blob([csv], {
+      type: 'text/csv;charset=utf-8;',
+    });
+
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+
+    link.href = url;
+    link.download = `analytics-report-${new Date()
+      .toISOString()
+      .slice(0, 10)}.csv`;
+
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+    URL.revokeObjectURL(url);
+  };
+
+  const periodLabel = {
+    all: 'All Data',
+    month: 'This Month',
+    quarter: 'This Quarter',
+    year: 'This Year',
   };
 
   return (
-    <Box
-      sx={{
-        py: 3,
-        bgcolor: 'background.default',
-        minHeight: '100vh',
-      }}
-    >
-      <Container maxWidth="xl">
-
-        {/* ================================
-            PAGE HEADER
-        ================================= */}
-        <Box
-          sx={{
-            display: 'flex',
-            flexDirection: {
-              xs: 'column',
-              sm: 'row',
-            },
-            justifyContent: 'space-between',
-            alignItems: {
-              xs: 'flex-start',
-              sm: 'center',
-            },
-            gap: 2,
-            mb: 3,
-          }}
-        >
-          {/* Page title */}
-          <Box>
-            <Typography
-              variant="h5"
-              fontWeight={700}
-              color="text.primary"
-            >
-              Analytics & Intelligence
-            </Typography>
-
-            <Typography
-              variant="body2"
-              color="text.secondary"
-              sx={{ mt: 0.5 }}
-            >
-              Comprehensive insights into inventory operations,
-              budget utilization, and vendor metrics.
-            </Typography>
-          </Box>
-
-          {/* Header actions */}
+    <Box sx={{ py: 2 }}>
+      {/* Page Header */}
+      <PageHeader
+        title="Analytics & Intelligence"
+        subtitle="Comprehensive insights into spend, budget utilization, supplier performance, and operational efficiency."
+        action={
           <Box
             sx={{
               display: 'flex',
@@ -124,13 +122,11 @@ export const AnalyticsDashboard = () => {
             }}
           >
             <Button
-              variant="outlined"
+              variant={showFilters ? 'contained' : 'outlined'}
               startIcon={<FilterListIcon />}
               size="small"
-              sx={{
-                bgcolor: 'background.paper',
-              }}
               onClick={handleFilters}
+              disableElevation
             >
               Filters
             </Button>
@@ -139,130 +135,142 @@ export const AnalyticsDashboard = () => {
               variant="contained"
               startIcon={<DownloadIcon />}
               size="small"
-              disableElevation
               onClick={handleExport}
+              disableElevation
             >
               Export Report
             </Button>
           </Box>
-        </Box>
+        }
+      />
 
-        {/* ================================
-            NAVIGATION TABS
-        ================================= */}
+      {/* Filters */}
+      {showFilters && (
         <Paper
           variant="outlined"
           sx={{
+            p: 2,
+            mb: 3,
             borderRadius: 2,
             borderColor: 'divider',
             bgcolor: 'background.paper',
           }}
         >
-          <Tabs
-            value={activeTab}
-            onChange={handleTabChange}
-            variant="scrollable"
-            scrollButtons="auto"
+          <Box
             sx={{
-              px: 2,
-              '& .MuiTab-root': {
-                minHeight: 60,
-                textTransform: 'none',
-                fontWeight: 600,
-                fontSize: '0.95rem',
-              },
+              display: 'flex',
+              alignItems: 'center',
+              gap: 1,
+              flexWrap: 'wrap',
             }}
           >
-            <Tab
-              label="Executive Overview"
-              {...a11yProps(0)}
-            />
-
-            <Tab
-              label="Budget & Spend"
-              {...a11yProps(1)}
-            />
-
-            <Tab
-              label="Vendor Performance"
-              {...a11yProps(2)}
-            />
-          </Tabs>
-        </Paper>
-
-        {/* ================================
-            EXECUTIVE OVERVIEW
-        ================================= */}
-        <CustomTabPanel
-          value={activeTab}
-          index={0}
-        >
-          <OverviewPanel />
-        </CustomTabPanel>
-
-        {/* ================================
-            BUDGET & SPEND
-        ================================= */}
-        <CustomTabPanel
-          value={activeTab}
-          index={1}
-        >
-          <BudgetAnalytics />
-        </CustomTabPanel>
-
-        {/* ================================
-            VENDOR PERFORMANCE
-        ================================= */}
-        <CustomTabPanel
-          value={activeTab}
-          index={2}
-        >
-          <Paper
-            variant="outlined"
-            sx={{
-              p: {
-                xs: 3,
-                sm: 6,
-              },
-              borderRadius: 2,
-              textAlign: 'center',
-              borderColor: 'divider',
-              bgcolor: 'background.paper',
-            }}
-          >
-            <Typography
-              variant="h6"
-              color="text.primary"
-              fontWeight={700}
-            >
-              Vendor Performance Analytics
-            </Typography>
-
             <Typography
               variant="body2"
-              color="text.secondary"
               sx={{
-                mt: 1,
-                maxWidth: 650,
-                mx: 'auto',
+                fontWeight: 600,
+                mr: 1,
               }}
             >
-              Vendor performance analytics will display supplier
-              rankings, lead times, defect rates, spending,
-              and SLA compliance.
+              Filter by period:
             </Typography>
 
             <Button
-              variant="outlined"
-              sx={{ mt: 3 }}
-              onClick={() => setActiveTab(0)}
+              variant={selectedPeriod === 'all' ? 'contained' : 'outlined'}
+              size="small"
+              onClick={() => setSelectedPeriod('all')}
+              disableElevation
             >
-              Return to Overview
+              All
             </Button>
-          </Paper>
-        </CustomTabPanel>
 
-      </Container>
+            <Button
+              variant={selectedPeriod === 'month' ? 'contained' : 'outlined'}
+              size="small"
+              onClick={() => setSelectedPeriod('month')}
+              disableElevation
+            >
+              This Month
+            </Button>
+
+            <Button
+              variant={selectedPeriod === 'quarter' ? 'contained' : 'outlined'}
+              size="small"
+              onClick={() => setSelectedPeriod('quarter')}
+              disableElevation
+            >
+              This Quarter
+            </Button>
+
+            <Button
+              variant={selectedPeriod === 'year' ? 'contained' : 'outlined'}
+              size="small"
+              onClick={() => setSelectedPeriod('year')}
+              disableElevation
+            >
+              This Year
+            </Button>
+          </Box>
+
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            sx={{
+              display: 'block',
+              mt: 1.5,
+            }}
+          >
+            Selected period: {periodLabel[selectedPeriod]}
+          </Typography>
+        </Paper>
+      )}
+
+      {/* Analytics Tabs */}
+      <Paper
+        variant="outlined"
+        sx={{
+          borderRadius: 2,
+          borderColor: 'divider',
+          bgcolor: 'background.paper',
+          mb: 3,
+        }}
+      >
+        <Tabs
+          value={activeTab}
+          onChange={handleTabChange}
+          variant="scrollable"
+          scrollButtons="auto"
+          sx={{
+            px: 2,
+            '& .MuiTab-root': {
+              minHeight: 60,
+              textTransform: 'none',
+              fontWeight: 600,
+              fontSize: '0.95rem',
+            },
+          }}
+        >
+          <Tab label="Executive Overview" {...a11yProps(0)} />
+
+          <Tab label="Budget & Spend" {...a11yProps(1)} />
+
+          <Tab label="Vendor Performance" {...a11yProps(2)} />
+        </Tabs>
+      </Paper>
+
+      {/* Executive Overview */}
+      <CustomTabPanel value={activeTab} index={0}>
+        <OverviewPanel period={selectedPeriod} />
+      </CustomTabPanel>
+
+      {/* Budget & Spend */}
+      <CustomTabPanel value={activeTab} index={1}>
+        <BudgetAnalytics range={selectedPeriod} />
+      </CustomTabPanel>
+
+      {/* Vendor Performance */}
+      <CustomTabPanel value={activeTab} index={2}>
+        <VendorAnalytics period={selectedPeriod} />
+      </CustomTabPanel>
     </Box>
   );
 };

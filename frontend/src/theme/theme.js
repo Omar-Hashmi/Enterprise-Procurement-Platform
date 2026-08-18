@@ -48,16 +48,12 @@ const theme = createTheme({
   },
   typography: {
     fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-    h1: { fontSize: '2rem', fontWeight: 700, letterSpacing: '-0.02em', color: '#0f172a' },
-    h2: { fontSize: '1.5rem', fontWeight: 600, letterSpacing: '-0.01em', color: '#0f172a' },
-    h3: { fontSize: '1.25rem', fontWeight: 600, color: '#0f172a' },
-    h4: { fontSize: '1.125rem', fontWeight: 600, color: '#0f172a' },
-    h5: { fontSize: '1rem', fontWeight: 600, color: '#0f172a' },
-    h6: { fontSize: '0.875rem', fontWeight: 600, color: '#0f172a' },
-    subtitle1: { fontSize: '0.9375rem', color: '#475569' },
-    subtitle2: { fontSize: '0.8125rem', color: '#64748b' },
-    body1: { fontSize: '0.875rem', lineHeight: 1.5, color: '#0f172a' },
-    body2: { fontSize: '0.8125rem', lineHeight: 1.5, color: '#475569' },
+    h1: { fontSize: 'clamp(1.65rem, 3vw, 2rem)', fontWeight: 700, letterSpacing: '-0.02em' },
+    h2: { fontSize: 'clamp(1.35rem, 2.5vw, 1.5rem)', fontWeight: 600, letterSpacing: '-0.01em' },
+    h3: { fontSize: '1.25rem', fontWeight: 600 }, h4: { fontSize: '1.125rem', fontWeight: 600 },
+    h5: { fontSize: '1rem', fontWeight: 600 }, h6: { fontSize: '0.875rem', fontWeight: 600 },
+    subtitle1: { fontSize: '0.9375rem' }, subtitle2: { fontSize: '0.8125rem' },
+    body1: { fontSize: '0.875rem', lineHeight: 1.5 }, body2: { fontSize: '0.8125rem', lineHeight: 1.5 },
     button: { textTransform: 'none', fontWeight: 500 },
   },
   shape: {
@@ -151,3 +147,27 @@ const theme = createTheme({
 });
 
 export default theme;
+
+export const createAppTheme = (mode = 'light') => createTheme(theme, {
+  palette: {
+    mode,
+    background: {
+      default: mode === 'dark' ? '#07111f' : '#f8fafc',
+      paper: mode === 'dark' ? '#101c2d' : '#ffffff',
+    },
+    text: {
+      primary: mode === 'dark' ? '#e5eefb' : '#0f172a',
+      secondary: mode === 'dark' ? '#a8bbd4' : '#475569',
+    },
+    divider: mode === 'dark' ? 'rgba(148, 163, 184, 0.18)' : '#e2e8f0',
+  },
+  components: {
+    MuiCssBaseline: { styleOverrides: { body: { backgroundColor: mode === 'dark' ? '#07111f' : '#f8fafc', color: mode === 'dark' ? '#e5eefb' : '#0f172a' } } },
+    MuiCard: { styleOverrides: { root: { backgroundColor: mode === 'dark' ? '#101c2d' : '#ffffff', borderColor: mode === 'dark' ? 'rgba(148, 163, 184, 0.18)' : '#e2e8f0' } } },
+    MuiDrawer: { styleOverrides: { paper: { backgroundColor: mode === 'dark' ? '#0c1728' : '#ffffff', borderColor: mode === 'dark' ? 'rgba(148, 163, 184, 0.18)' : '#e2e8f0' } } },
+    MuiTableCell: { styleOverrides: { head: { backgroundColor: mode === 'dark' ? 'rgba(148, 163, 184, 0.08)' : '#f8fafc' }, body: { borderColor: mode === 'dark' ? 'rgba(148, 163, 184, 0.12)' : '#f1f5f9' } } },
+    MuiInputBase: { styleOverrides: { root: { color: mode === 'dark' ? '#e5eefb' : '#0f172a' } } },
+    MuiOutlinedInput: { styleOverrides: { notchedOutline: { borderColor: mode === 'dark' ? 'rgba(148,163,184,.34)' : '#cbd5e1' } } },
+    MuiMenu: { styleOverrides: { paper: { backgroundColor: mode === 'dark' ? '#142237' : '#ffffff' } } },
+  },
+});

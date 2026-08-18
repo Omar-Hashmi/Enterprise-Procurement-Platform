@@ -2,12 +2,14 @@ import React from 'react';
 import { Box, Typography } from '@mui/material';
 import DeliveryTable from './DeliveryTable';
 
-export default function PendingDeliveries() {
-  const sample = [{ id: 1, ref: 'DEL-1001', status: 'Pending', eta: '2026-08-20' }];
+export default function PendingDeliveries({ deliveries = [] }) {
+  const pendingDeliveries = deliveries.filter((delivery) =>
+    ['pending', 'scheduled', 'in transit'].includes(String(delivery.deliveryStatus || delivery.status || '').toLowerCase())
+  );
   return (
     <Box>
       <Typography variant="h6" sx={{ mb: 1 }}>Pending Deliveries</Typography>
-      <DeliveryTable deliveries={sample} />
+      <DeliveryTable deliveries={pendingDeliveries} />
     </Box>
   );
 }

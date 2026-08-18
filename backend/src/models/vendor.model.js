@@ -48,6 +48,7 @@ const BankAccountSchema = new Schema(
     iban: { type: String },
     swiftCode: { type: String },
     branchCode: { type: String },
+    currency: { type: String, default: "PKR", trim: true, uppercase: true },
     isPrimary: { type: Boolean, default: false },
   },
   { _id: true, timestamps: true }

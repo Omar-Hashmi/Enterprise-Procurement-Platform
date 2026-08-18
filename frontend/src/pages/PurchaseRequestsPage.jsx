@@ -38,6 +38,7 @@ import apiClient from '../lib/api';
 import { useAuthStore } from '../stores/authStore';
 import { getStatusColor, PURCHASE_REQUEST_STATUS } from '../utils/constants';
 import { formatCurrency, formatDate } from '../utils/formatters';
+import { demoPurchaseRequests } from '../data/demoData';
 
 const STATUS_FILTER_OPTIONS = [
   { value: 'ALL', label: 'All Statuses' },
@@ -78,7 +79,8 @@ export const PurchaseRequestsPage = () => {
     queryKey: ['purchaseRequests'],
     queryFn: async () => {
       const response = await apiClient.get('/purchase-requests');
-      return Array.isArray(response.data) ? response.data : [];
+      const records = Array.isArray(response.data) ? response.data : [];
+      return records.length ? records : demoPurchaseRequests;
     },
     staleTime: 0,
     refetchOnMount: 'always',

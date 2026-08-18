@@ -109,10 +109,23 @@ const addBankAccount = catchAsync(async (req, res) => {
     iban: req.body.iban,
     swiftCode: req.body.swiftCode,
     branchCode: req.body.branchCode,
+    currency: req.body.currency,
     isPrimary: Boolean(req.body.isPrimary),
   });
 
   res.status(201).json({ success: true, data: vendor });
+});
+const updateBankAccount = catchAsync(async (req, res) => {
+  const vendor = await vendorService.updateBankAccount(getIdParam(req), req.params.accountId, req.body);
+  res.status(200).json({ success: true, data: vendor });
+});
+const deleteBankAccount = catchAsync(async (req, res) => {
+  const vendor = await vendorService.deleteBankAccount(getIdParam(req), req.params.accountId);
+  res.status(200).json({ success: true, data: vendor });
+});
+const setPrimaryBankAccount = catchAsync(async (req, res) => {
+  const vendor = await vendorService.setPrimaryBankAccount(getIdParam(req), req.params.accountId);
+  res.status(200).json({ success: true, data: vendor });
 });
 
 const getVendorCategories = catchAsync(async (_req, res) => {
@@ -140,6 +153,9 @@ module.exports = {
   rateVendor,
   addCertification,
   addBankAccount,
+  updateBankAccount,
+  deleteBankAccount,
+  setPrimaryBankAccount,
   getVendorCategories,
   createVendorCategory,
   getVendorStatusSummary,

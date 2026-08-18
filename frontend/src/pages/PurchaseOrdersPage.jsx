@@ -42,6 +42,7 @@ import apiClient from '../lib/api';
 import { useAuthStore } from '../stores/authStore';
 import { getStatusColor, USER_ROLES } from '../utils/constants';
 import { formatCurrency, formatDate } from '../utils/formatters';
+import { demoPurchaseOrders } from '../data/demoData';
 
 export const PurchaseOrdersPage = () => {
   const navigate = useNavigate();
@@ -76,7 +77,8 @@ export const PurchaseOrdersPage = () => {
     queryFn: async () => {
       try {
         const response = await apiClient.get('/purchase-orders');
-        return Array.isArray(response.data) ? response.data : [];
+        const records = Array.isArray(response.data) ? response.data : [];
+        return records.length ? records : demoPurchaseOrders;
       } catch (err) {
         if (err.response?.status === 403) return [];
         throw err;

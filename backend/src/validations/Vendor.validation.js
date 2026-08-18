@@ -127,7 +127,12 @@ const addBankAccountSchema = Joi.object({
   iban: Joi.string().optional(),
   swiftCode: Joi.string().optional(),
   branchCode: Joi.string().optional(),
+  currency: Joi.string().length(3).uppercase().optional(),
   isPrimary: Joi.boolean().optional(),
+});
+const bankAccountIdParamSchema = Joi.object({
+  id: objectId.required(),
+  accountId: objectId.required(),
 });
 
 // ---- Vendor Categories ----
@@ -147,6 +152,8 @@ const validateListVendorsQuery = validate(listVendorsQuerySchema, "query");
 const validateRateVendor = validate(rateVendorSchema, "body");
 const validateAddCertification = validate(addCertificationSchema, "body");
 const validateAddBankAccount = validate(addBankAccountSchema, "body");
+const validateUpdateBankAccount = validate(addBankAccountSchema, "body");
+const validateBankAccountIdParam = validate(bankAccountIdParamSchema, "params");
 const validateCreateVendorCategory = validate(createVendorCategorySchema, "body");
 
 module.exports = {
@@ -158,6 +165,7 @@ module.exports = {
   rateVendorSchema,
   addCertificationSchema,
   addBankAccountSchema,
+  bankAccountIdParamSchema,
   createVendorCategorySchema,
   validateCreateVendor,
   validateUpdateVendor,
@@ -167,5 +175,7 @@ module.exports = {
   validateRateVendor,
   validateAddCertification,
   validateAddBankAccount,
+  validateUpdateBankAccount,
+  validateBankAccountIdParam,
   validateCreateVendorCategory,
 };

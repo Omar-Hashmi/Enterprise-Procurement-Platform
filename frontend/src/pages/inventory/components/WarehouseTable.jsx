@@ -1,13 +1,8 @@
 import React from 'react';
 import { Paper, Table, TableHead, TableRow, TableCell, TableBody, TableContainer, TablePagination, Typography } from '@mui/material';
 
-const MOCK = [
-  { id: 1, name: 'Main Warehouse', location: 'City A' },
-  { id: 2, name: 'Overflow', location: 'City B' },
-];
-
-export default function WarehouseTable({ warehouses = MOCK, page = 0, rowsPerPage = 10, onPageChange, onRowsPerPageChange }) {
-  const display = warehouses && warehouses.length ? warehouses : MOCK;
+export default function WarehouseTable({ warehouses = [], page = 0, rowsPerPage = 10, onPageChange, onRowsPerPageChange }) {
+  const display = warehouses;
   const paginated = display.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
   return (
@@ -27,6 +22,7 @@ export default function WarehouseTable({ warehouses = MOCK, page = 0, rowsPerPag
                 <TableCell>{w.location}</TableCell>
               </TableRow>
             ))}
+            {!paginated.length && <TableRow><TableCell colSpan={2} align="center">No warehouses found.</TableCell></TableRow>}
           </TableBody>
         </Table>
       </TableContainer>

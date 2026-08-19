@@ -40,27 +40,27 @@ router.use(protect);
 // Contract Expiry — must come before /:id
 router.get(
   "/expiring",
-  restrictTo("procurement_officer", "admin"),
+  restrictTo("procurement_manager", "procurement_officer", "admin"),
   validateExpiringContractsQuery,
   getExpiringContracts
 );
 
 router.get(
   "/status-summary",
-  restrictTo("procurement_officer", "admin"),
+  restrictTo("procurement_manager", "procurement_officer", "admin"),
   getContractStatusSummary
 );
 
 router
   .route("/")
-  .get(restrictTo("procurement_officer", "admin"), validateListContractsQuery, getContracts)
-  .post(restrictTo("procurement_officer", "admin"), validateCreateContract, createContract);
+  .get(restrictTo("procurement_manager", "procurement_officer", "admin"), validateListContractsQuery, getContracts)
+  .post(restrictTo("procurement_manager", "procurement_officer", "admin"), validateCreateContract, createContract);
 
 router
   .route("/:id")
-  .get(restrictTo("procurement_officer", "admin"), validateContractIdParam, getContractById)
+  .get(restrictTo("procurement_manager", "procurement_officer", "admin"), validateContractIdParam, getContractById)
   .patch(
-    restrictTo("procurement_officer", "admin"),
+    restrictTo("procurement_manager", "procurement_officer", "admin"),
     validateContractIdParam,
     validateUpdateContract,
     updateContract
@@ -69,7 +69,7 @@ router
 
 router.patch(
   "/:id/terminate",
-  restrictTo("procurement_officer", "admin"),
+  restrictTo("procurement_manager", "procurement_officer", "admin"),
   validateContractIdParam,
   validateTerminateContract,
   terminateContract
@@ -77,7 +77,7 @@ router.patch(
 
 router.patch(
   "/:id/renew",
-  restrictTo("procurement_officer", "admin"),
+  restrictTo("procurement_manager", "procurement_officer", "admin"),
   validateContractIdParam,
   validateRenewContract,
   renewContract
@@ -85,7 +85,7 @@ router.patch(
 
 router.post(
   "/:id/attachments",
-  restrictTo("procurement_officer", "admin"),
+  restrictTo("procurement_manager", "procurement_officer", "admin"),
   validateContractIdParam,
   validateAddAttachment,
   addAttachment
@@ -93,7 +93,7 @@ router.post(
 
 router.post(
   "/:id/compliance-documents",
-  restrictTo("procurement_officer", "admin"),
+  restrictTo("procurement_manager", "procurement_officer", "admin"),
   validateContractIdParam,
   validateAddComplianceDocument,
   addComplianceDocument
@@ -101,14 +101,14 @@ router.post(
 
 router.patch(
   "/:id/compliance-documents/:documentId/verify",
-  restrictTo("procurement_officer", "admin"),
+  restrictTo("procurement_manager", "procurement_officer", "admin"),
   validateComplianceDocumentParam,
   verifyComplianceDocument
 );
 
 router.patch(
   "/:id/reminders/:reminderId/mark-sent",
-  restrictTo("procurement_officer", "admin"),
+  restrictTo("procurement_manager", "procurement_officer", "admin"),
   validateReminderParam,
   markReminderSent
 );

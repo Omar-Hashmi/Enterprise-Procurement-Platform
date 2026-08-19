@@ -7,43 +7,41 @@ const {
 
 const router = express.Router();
 
-// Get All Users
+// Get All Users (Admin only)
 router.get(
     "/",
     authenticate,
-    authorize(["admin", "employee"]),
+    authorize(["admin"]),
     userController.getAllUsers
 );
 
-// Get User By ID
+// Get User By ID (Any authenticated user for their own profile, or admin)
 router.get(
     "/:id",
     authenticate,
-    authorize(["admin", "employee"]),
     userController.getUserById
 );
 
-// Update User
+// Update User (Self or Admin)
 router.put(
     "/:id",
     authenticate,
-    authorize(["admin", "employee"]),
     userController.updateUser
 );
 
-// Soft Delete User (Deactivate)
+// Soft Delete User (Admin only)
 router.delete(
     "/:id",
     authenticate,
-    authorize(["admin", "employee"]),
+    authorize(["admin"]),
     userController.softDeleteUser
 );
 
-// Activate User
+// Activate User (Admin only)
 router.patch(
     "/:id/activate",
     authenticate,
-    authorize(["admin", "employee"]),
+    authorize(["admin"]),
     userController.activateUser
 );
 

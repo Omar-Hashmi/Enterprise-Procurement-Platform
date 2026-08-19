@@ -37,7 +37,7 @@ router.post(
 router.post(
     "/",
     authenticate,
-    authorize(["employee", "admin"]),
+    authorize(["employee", "department", "department_manager", "admin"]),
     validateCreatePurchaseRequest,
     purchaseRequestController.createPurchaseRequest
 );
@@ -46,7 +46,17 @@ router.post(
 router.get(
     "/",
     authenticate,
-    authorize(["employee", "admin"]),
+    authorize([
+        "employee",
+        "department",
+        "department_manager",
+        "finance_manager",
+        "finance_officer",
+        "procurement_manager",
+        "procurement_officer",
+        "ceo",
+        "admin",
+    ]),
     purchaseRequestController.getAllPurchaseRequests
 );
 
@@ -54,7 +64,17 @@ router.get(
 router.get(
     "/:id/status",
     authenticate,
-    authorize(["employee", "admin"]),
+    authorize([
+        "employee",
+        "department",
+        "department_manager",
+        "finance_manager",
+        "finance_officer",
+        "procurement_manager",
+        "procurement_officer",
+        "ceo",
+        "admin",
+    ]),
     purchaseRequestController.getPurchaseRequestStatus
 );
 
@@ -62,7 +82,17 @@ router.get(
 router.get(
     "/:id",
     authenticate,
-    authorize(["employee", "admin"]),
+    authorize([
+        "employee",
+        "department",
+        "department_manager",
+        "finance_manager",
+        "finance_officer",
+        "procurement_manager",
+        "procurement_officer",
+        "ceo",
+        "admin",
+    ]),
     purchaseRequestController.getPurchaseRequestById
 );
 
@@ -70,7 +100,7 @@ router.get(
 router.put(
     "/:id",
     authenticate,
-    authorize(["employee", "admin"]),
+    authorize(["employee", "department", "department_manager", "admin"]),
     purchaseRequestController.updatePurchaseRequest
 );
 
@@ -78,7 +108,7 @@ router.put(
 router.patch(
     "/:id/cancel",
     authenticate,
-    authorize(["employee", "admin"]),
+    authorize(["employee", "department", "department_manager", "admin"]),
     purchaseRequestController.cancelPurchaseRequest
 );
 
@@ -86,7 +116,7 @@ router.patch(
 router.post(
     "/:id/upload",
     authenticate,
-    authorize(["employee", "admin"]),
+    authorize(["employee", "department", "department_manager", "admin"]),
     upload.single("attachment"),
     purchaseRequestController.uploadAttachment
 );

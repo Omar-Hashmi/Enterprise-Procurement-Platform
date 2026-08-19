@@ -10,9 +10,11 @@ router.post(
     authMiddleware.authenticate,
     authMiddleware.authorize([
         "department",
+        "department_manager",
         "finance_manager",
         "procurement_manager",
         "ceo",
+        "admin",
     ]),
     approvalController.createApproval
 );
@@ -22,9 +24,11 @@ router.get(
     authMiddleware.authenticate,
     authMiddleware.authorize([
         "department",
+        "department_manager",
         "finance_manager",
         "procurement_manager",
         "ceo",
+        "admin",
     ]),
     approvalController.getAllApprovals
 );
@@ -34,9 +38,11 @@ router.get(
     authMiddleware.authenticate,
     authMiddleware.authorize([
         "department",
+        "department_manager",
         "finance_manager",
         "procurement_manager",
         "ceo",
+        "admin",
     ]),
     approvalController.getApprovalById
 );
@@ -45,10 +51,14 @@ router.get(
     "/purchase-request/:purchaseRequestId",
     authMiddleware.authenticate,
     authMiddleware.authorize([
+        "employee",
         "department",
+        "department_manager",
         "finance_manager",
         "procurement_manager",
+        "procurement_officer",
         "ceo",
+        "admin",
     ]),
     approvalController.getApprovalsByPurchaseRequest
 );
@@ -58,9 +68,11 @@ router.put(
     authMiddleware.authenticate,
     authMiddleware.authorize([
         "department",
+        "department_manager",
         "finance_manager",
         "procurement_manager",
         "ceo",
+        "admin",
     ]),
     approvalController.updateApproval
 );

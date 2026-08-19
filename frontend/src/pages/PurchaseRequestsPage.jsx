@@ -154,6 +154,9 @@ export const PurchaseRequestsPage = () => {
     );
   }
 
+  const userRole = user?.role ? String(user.role).toLowerCase() : '';
+  const canCreatePR = ['employee', 'department', 'department_manager', 'admin'].includes(userRole);
+
   return (
     <Box>
       <PageHeader
@@ -172,16 +175,17 @@ export const PurchaseRequestsPage = () => {
               </IconButton>
             </Tooltip>
 
-            {/* Create Purchase Request Action (Phase 3C will implement creation page) */}
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<AddIcon />}
-              onClick={() => navigate('/purchase-requests/new')}
-              sx={{ fontWeight: 600, borderRadius: 1.5 }}
-            >
-              New Request
-            </Button>
+            {canCreatePR && (
+              <Button
+                variant="contained"
+                color="primary"
+                startIcon={<AddIcon />}
+                onClick={() => navigate('/purchase-requests/new')}
+                sx={{ fontWeight: 600, borderRadius: 1.5 }}
+              >
+                New Request
+              </Button>
+            )}
           </Box>
         }
       />

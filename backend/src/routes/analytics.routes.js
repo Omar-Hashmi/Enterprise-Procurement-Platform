@@ -20,7 +20,7 @@ const router = Router();
 if (process.env.NODE_ENV === 'production') {
   // All analytics routes require an authenticated session in production
   router.use(protect);
-  router.use(restrictTo("procurement_officer", "finance_officer", "department_manager", "admin"));
+  router.use(restrictTo("procurement_manager", "procurement_officer", "finance_manager", "finance_officer", "ceo", "department", "department_manager", "admin"));
 } else {
   // Development: no auth required for analytics endpoints to avoid 403 during local dev.
 }

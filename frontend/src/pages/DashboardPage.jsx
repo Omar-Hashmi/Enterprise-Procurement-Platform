@@ -40,12 +40,37 @@ import { demoApprovals, demoPurchaseOrders, demoPurchaseRequests } from '../data
 export const DashboardPage = () => {
   const navigate = useNavigate();
   const user = useAuthStore((state) => state.user);
-  const userRole = user?.role || 'employee';
+  const userRole = user?.role ? String(user.role).toLowerCase() : 'employee';
 
   // Role permissions
-  const canAccessPurchaseRequests = ['employee', 'admin'].includes(userRole);
-  const canAccessApprovals = ['department', 'finance_manager', 'procurement_manager', 'ceo'].includes(userRole);
-  const canAccessPurchaseOrders = ['admin', 'procurement_manager', 'finance_manager'].includes(userRole);
+  const canAccessPurchaseRequests = [
+    'employee',
+    'department',
+    'department_manager',
+    'finance_manager',
+    'finance_officer',
+    'procurement_manager',
+    'procurement_officer',
+    'ceo',
+    'admin',
+  ].includes(userRole);
+
+  const canAccessApprovals = [
+    'department',
+    'department_manager',
+    'finance_manager',
+    'procurement_manager',
+    'ceo',
+    'admin',
+  ].includes(userRole);
+
+  const canAccessPurchaseOrders = [
+    'admin',
+    'procurement_manager',
+    'procurement_officer',
+    'finance_manager',
+    'ceo',
+  ].includes(userRole);
 
   // 1. Fetch Purchase Requests
   const {

@@ -32,7 +32,28 @@ class VendorRepository {
     const query = {};
 
     if (filter.status) query.status = filter.status;
-    if (filter.category) query.categories = filter.category;
+
+    if (filter.category) {
+      const categoryVal = String(filter.category).trim();
+      if (Types.ObjectId.isValid(categoryVal) && categoryVal.length === 24) {
+        query.categories = categoryVal;
+      } else if (categoryVal) {
+        const escaped = categoryVal.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+        const matchedCategories = await VendorCategory.find({
+          name: { $regex: `^${escaped}$`, $options: "i" },
+        })
+          .select("_id")
+          .exec();
+
+        if (matchedCategories && matchedCategories.length > 0) {
+          const categoryIds = matchedCategories.map((c) => c._id);
+          query.categories = { $in: categoryIds };
+        } else {
+          query.categories = { $in: [] };
+        }
+      }
+    }
+
     if (filter.search) {
       query.$or = [
         { companyName: { $regex: filter.search, $options: "i" } },

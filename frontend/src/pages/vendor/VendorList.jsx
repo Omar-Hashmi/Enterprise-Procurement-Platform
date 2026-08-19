@@ -62,9 +62,14 @@ const VendorList = () => {
    */
 
   const user = useAuthStore((state) => state.user)
+  const userRole = user?.role ? String(user.role).toLowerCase() : ''
 
-  const isAdmin =
-    user?.role === USER_ROLES.ADMIN
+  const isAdmin = userRole === USER_ROLES.ADMIN
+  const canAddVendor = [
+    USER_ROLES.ADMIN,
+    USER_ROLES.PROCUREMENT_MANAGER,
+    USER_ROLES.PROCUREMENT_OFFICER,
+  ].includes(userRole)
 
   /*
    * --------------------------------------------------------------------------
@@ -153,18 +158,19 @@ const VendorList = () => {
    */
 
   const pageStatistics = useMemo(() => {
+    const list = Array.isArray(vendors) ? vendors : []
     return {
-      active: vendors.filter(
-        (vendor) => vendor.status === 'ACTIVE'
+      active: list.filter(
+        (vendor) => String(vendor?.status || '').toUpperCase() === 'ACTIVE'
       ).length,
 
-      pending: vendors.filter(
-        (vendor) => vendor.status === 'PENDING'
+      pending: list.filter(
+        (vendor) => String(vendor?.status || '').toUpperCase() === 'PENDING'
       ).length,
 
-      blacklisted: vendors.filter(
+      blacklisted: list.filter(
         (vendor) =>
-          vendor.status === 'BLACKLISTED'
+          String(vendor?.status || '').toUpperCase() === 'BLACKLISTED'
       ).length,
     }
   }, [vendors])
@@ -328,7 +334,7 @@ const VendorList = () => {
               Refresh
             </Button>
 
-            {isAdmin && (
+            {canAddVendor && (
               <Button
                 variant="contained"
                 color="primary"
@@ -676,7 +682,7 @@ const VendorList = () => {
         >
           {error?.response?.data?.message ||
             error?.message ||
-            'Unable to load vendors. Please try again.'}
+            'Unable to load vendors for the selected criteria.'}
         </Alert>
       )}
 

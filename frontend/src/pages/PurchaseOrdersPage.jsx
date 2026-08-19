@@ -54,8 +54,9 @@ export const PurchaseOrdersPage = () => {
   const canAccessPO = [
     USER_ROLES.ADMIN,
     USER_ROLES.PROCUREMENT_MANAGER,
-    USER_ROLES.FINANCE_MANAGER,
     USER_ROLES.PROCUREMENT_OFFICER,
+    USER_ROLES.FINANCE_MANAGER,
+    USER_ROLES.CEO,
   ].includes(userRole);
 
   const [searchTerm, setSearchTerm] = useState('');

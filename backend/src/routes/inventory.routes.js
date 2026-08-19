@@ -43,13 +43,13 @@ router.use(protect);
 router
   .route("/warehouses")
   .get(validateListWarehousesQuery, getWarehouses)
-  .post(restrictTo("procurement_officer", "admin"), validateCreateWarehouse, createWarehouse);
+  .post(restrictTo("procurement_manager", "procurement_officer", "admin"), validateCreateWarehouse, createWarehouse);
 
 router
   .route("/warehouses/:warehouseId")
   .get(validateWarehouseIdParam, getWarehouseById)
   .patch(
-    restrictTo("procurement_officer", "admin"),
+    restrictTo("procurement_manager", "procurement_officer", "admin"),
     validateWarehouseIdParam,
     validateUpdateWarehouse,
     updateWarehouse
@@ -57,7 +57,7 @@ router
 
 router.patch(
   "/warehouses/:warehouseId/deactivate",
-  restrictTo("procurement_officer", "admin"),
+  restrictTo("procurement_manager", "procurement_officer", "admin"),
   validateWarehouseIdParam,
   deactivateWarehouse
 );
@@ -67,7 +67,7 @@ router.patch(
 router.get("/pending", validatePendingDeliveriesQuery, getPendingDeliveries);
 router.get(
   "/status-summary",
-  restrictTo("procurement_officer", "warehouse_staff", "admin"),
+  restrictTo("procurement_manager", "procurement_officer", "warehouse_staff", "admin"),
   getDeliveryStatusSummary
 );
 
@@ -82,13 +82,13 @@ router.get(
 router
   .route("/")
   .get(validateListDeliveriesQuery, getDeliveries)
-  .post(restrictTo("procurement_officer", "admin"), validateCreateDelivery, createDeliveryRecord);
+  .post(restrictTo("procurement_manager", "procurement_officer", "admin"), validateCreateDelivery, createDeliveryRecord);
 
 router
   .route("/:id")
   .get(validateInventoryIdParam, getDeliveryById)
   .patch(
-    restrictTo("procurement_officer", "warehouse_staff", "admin"),
+    restrictTo("procurement_manager", "procurement_officer", "warehouse_staff", "admin"),
     validateInventoryIdParam,
     validateUpdateDelivery,
     updateDelivery
@@ -96,7 +96,7 @@ router
 
 router.post(
   "/:id/receive",
-  restrictTo("warehouse_staff", "admin"),
+  restrictTo("warehouse_staff", "procurement_manager", "procurement_officer", "admin"),
   validateInventoryIdParam,
   validateReceiveGoods,
   receiveGoods
@@ -104,7 +104,7 @@ router.post(
 
 router.post(
   "/:id/stock-movements",
-  restrictTo("warehouse_staff", "admin"),
+  restrictTo("warehouse_staff", "procurement_manager", "procurement_officer", "admin"),
   validateInventoryIdParam,
   validateStockMovement,
   recordStockMovement
@@ -112,7 +112,7 @@ router.post(
 
 router.patch(
   "/:id/cancel",
-  restrictTo("procurement_officer", "admin"),
+  restrictTo("procurement_manager", "procurement_officer", "admin"),
   validateInventoryIdParam,
   cancelDelivery
 );

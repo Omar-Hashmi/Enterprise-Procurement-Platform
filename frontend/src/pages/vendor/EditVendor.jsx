@@ -61,7 +61,16 @@ export const EditVendor = () => {
             contactPerson: data.contactPerson || '',
             email: data.email || '',
             phone: data.phone || '',
-            category: data.category || '',
+            category:
+              (typeof data.category === 'object' && data.category !== null
+                ? data.category.name
+                : data.category) ||
+              (Array.isArray(data.categories) && data.categories[0]
+                ? typeof data.categories[0] === 'object' && data.categories[0] !== null
+                  ? data.categories[0].name
+                  : data.categories[0]
+                : '') ||
+              '',
             taxId: data.taxId || '',
             address: data.address || '',
             paymentTerms: data.paymentTerms || 'NET30',

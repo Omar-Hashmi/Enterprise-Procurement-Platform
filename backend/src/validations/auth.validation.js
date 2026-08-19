@@ -37,7 +37,7 @@ const registerSchema = Joi.object({
     )
     .optional(),
   department: Joi.string()
-    .valid("IT", "HR", "Finance", "Procurement", "Operations")
+    .valid("IT", "HR", "Finance", "Procurement", "Operations", "Executive")
     .required(),
   phone: Joi.string().required(),
 });

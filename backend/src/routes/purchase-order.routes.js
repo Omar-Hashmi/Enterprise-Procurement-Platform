@@ -12,7 +12,7 @@ const router = express.Router();
 router.post(
     "/",
     authenticate,
-    authorize(["admin", "procurement_manager"]),
+    authorize(["admin", "procurement_manager", "procurement_officer"]),
     purchaseOrderController.createPurchaseOrder
 );
 
@@ -20,7 +20,7 @@ router.post(
 router.get(
     "/",
     authenticate,
-    authorize(["admin", "procurement_manager", "finance_manager"]),
+    authorize(["admin", "procurement_manager", "procurement_officer", "finance_manager", "ceo"]),
     purchaseOrderController.getAllPurchaseOrders
 );
 
@@ -28,7 +28,7 @@ router.get(
 router.get(
     "/:id",
     authenticate,
-    authorize(["admin", "procurement_manager", "finance_manager"]),
+    authorize(["admin", "procurement_manager", "procurement_officer", "finance_manager", "ceo"]),
     purchaseOrderController.getPurchaseOrderById
 );
 
@@ -36,7 +36,7 @@ router.get(
 router.put(
     "/:id",
     authenticate,
-    authorize(["admin", "procurement_manager"]),
+    authorize(["admin", "procurement_manager", "procurement_officer"]),
     purchaseOrderController.updatePurchaseOrder
 );
 
@@ -44,7 +44,7 @@ router.put(
 router.patch(
     "/:id/cancel",
     authenticate,
-    authorize(["admin", "procurement_manager"]),
+    authorize(["admin", "procurement_manager", "procurement_officer"]),
     purchaseOrderController.cancelPurchaseOrder
 );
 

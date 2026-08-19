@@ -35,6 +35,8 @@ import {
 } from 'react-router-dom'
 
 import { useVendor } from '../../hooks/useVendor'
+import { useAuthStore } from '../../stores/authStore'
+import { USER_ROLES } from '../../utils/constants'
 
 import VendorStatusSummary from './components/VendorStatusSummary'
 import VendorRating from './components/VendorRating'
@@ -133,6 +135,13 @@ const formatAddress = (vendor) => {
 export const VendorDetails = () => {
   const { id } = useParams()
   const navigate = useNavigate()
+  const user = useAuthStore((state) => state.user)
+  const userRole = user?.role ? String(user.role).toLowerCase() : ''
+  const canManageVendor = [
+    USER_ROLES.ADMIN,
+    USER_ROLES.PROCUREMENT_MANAGER,
+    USER_ROLES.PROCUREMENT_OFFICER,
+  ].includes(userRole)
 
   const { getVendorById, addBankAccount, updateBankAccount, deleteBankAccount, setPrimaryBankAccount } = useVendor()
 
@@ -210,12 +219,23 @@ export const VendorDetails = () => {
     vendor?.companyName ||
     'Unnamed Vendor'
 
-  const categories =
+  const rawCategories =
     Array.isArray(vendor?.categories)
       ? vendor.categories
       : vendor?.category
         ? [vendor.category]
         : []
+
+  const categories = rawCategories
+    .map((cat) => {
+      if (!cat) return ''
+      if (typeof cat === 'string') return cat.trim()
+      if (typeof cat === 'object') {
+        return cat.name || cat.title || cat.label || ''
+      }
+      return String(cat)
+    })
+    .filter(Boolean)
 
   const contactPerson =
     vendor?.contactPerson ||
@@ -516,13 +536,13 @@ export const VendorDetails = () => {
               >
                 {categories.length > 0 ? (
                   categories.map(
-                    (category) => (
+                    (categoryName, idx) => (
                       <Typography
-                        key={category}
+                        key={`detail-cat-${idx}`}
                         variant="body2"
                         color="text.secondary"
                       >
-                        {category}
+                        {categoryName}
                       </Typography>
                     )
                   )
@@ -538,27 +558,29 @@ export const VendorDetails = () => {
             </Box>
           </Box>
 
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={
-              <EditIcon />
-            }
-            disabled={!vendorId}
-            onClick={() =>
-              navigate(
-                `/vendors/edit/${vendorId}`
-              )
-            }
-            sx={{
-              alignSelf: {
-                xs: 'stretch',
-                sm: 'center',
-              },
-            }}
-          >
-            Edit Profile
-          </Button>
+          {canManageVendor && (
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={
+                <EditIcon />
+              }
+              disabled={!vendorId}
+              onClick={() =>
+                navigate(
+                  `/vendors/${vendorId}/edit`
+                )
+              }
+              sx={{
+                alignSelf: {
+                  xs: 'stretch',
+                  sm: 'center',
+                },
+              }}
+            >
+              Edit Profile
+            </Button>
+          )}
         </Box>
       </Box>
 

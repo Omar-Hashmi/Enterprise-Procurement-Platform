@@ -17,8 +17,25 @@ const createPurchaseRequest = async (requestData) => {
     return purchaseRequest;
 };
 
-const getAllPurchaseRequests = async () => {
-    return await purchaseRequestRepository.getAllPurchaseRequests();
+const getAllPurchaseRequests = async (user = null) => {
+    let filter = {};
+
+    if (user && user.role === "employee") {
+        // Employee sees only their own purchase requests
+        filter.requestedBy = user.userId;
+    }
+
+    const requests = await purchaseRequestRepository.getAllPurchaseRequests(filter);
+
+    // If department role and user has department, filter to department's requests if needed
+    if (user && (user.role === "department" || user.role === "department_manager") && user.department) {
+        const deptRequests = requests.filter(
+            (pr) => pr.requestedBy && pr.requestedBy.department === user.department
+        );
+        return deptRequests.length ? deptRequests : requests;
+    }
+
+    return requests;
 };
 
 const getPurchaseRequestById = async (id, user) => {
@@ -37,11 +54,24 @@ const getPurchaseRequestById = async (id, user) => {
         throw error;
     }
 
-    // ⭐ Ownership Validation
-    if (
-        user.role !== "admin" &&
-        purchaseRequest.requestedBy._id.toString() !== user.userId
-    ) {
+    // ⭐ Role-Based Access Validation
+    const managementRoles = [
+        "admin",
+        "department",
+        "department_manager",
+        "finance_manager",
+        "finance_officer",
+        "procurement_manager",
+        "procurement_officer",
+        "ceo",
+    ];
+
+    const isOwner =
+        purchaseRequest.requestedBy &&
+        purchaseRequest.requestedBy._id &&
+        purchaseRequest.requestedBy._id.toString() === user.userId;
+
+    if (!managementRoles.includes(user.role) && !isOwner) {
         const error = new Error(
             "You are not authorized to access this purchase request"
         );

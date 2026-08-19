@@ -39,20 +39,20 @@ router.use(protect);
 // Budget Warnings — over-threshold budgets, must come before /:id
 router.get(
   "/warnings",
-  restrictTo("procurement_officer", "finance_manager", "finance_officer", "admin"),
+  restrictTo("procurement_manager", "procurement_officer", "finance_manager", "finance_officer", "admin"),
   getBudgetWarnings
 );
 
 router.get(
   "/status-summary",
-  restrictTo("procurement_officer", "finance_manager", "finance_officer", "admin"),
+  restrictTo("procurement_manager", "procurement_officer", "finance_manager", "finance_officer", "admin"),
   getBudgetStatusSummary
 );
 
 router
   .route("/")
   .get(
-    restrictTo("procurement_officer", "finance_manager", "finance_officer", "department_manager", "admin"),
+    restrictTo("procurement_manager", "procurement_officer", "finance_manager", "finance_officer", "department", "department_manager", "admin"),
     validateListBudgetsQuery,
     getBudgets
   )
@@ -65,7 +65,7 @@ router
 router
   .route("/:id")
   .get(
-    restrictTo("procurement_officer", "finance_manager", "finance_officer", "department_manager", "admin"),
+    restrictTo("procurement_manager", "procurement_officer", "finance_manager", "finance_officer", "department", "department_manager", "admin"),
     validateBudgetIdParam,
     getBudgetById
   )
@@ -78,7 +78,7 @@ router
 
 router.get(
   "/:id/check-purchase",
-  restrictTo("procurement_officer", "admin"),
+  restrictTo("procurement_manager", "procurement_officer", "admin"),
   validateBudgetIdParam,
   validateCheckPurchaseQuery,
   checkPurchaseAllowed
@@ -94,7 +94,7 @@ router.post(
 
 router.post(
   "/:id/reserve",
-  restrictTo("procurement_officer", "admin"),
+  restrictTo("procurement_manager", "procurement_officer", "admin"),
   validateBudgetIdParam,
   validateReserveFunds,
   reserveFunds
@@ -102,7 +102,7 @@ router.post(
 
 router.post(
   "/:id/release",
-  restrictTo("procurement_officer", "admin"),
+  restrictTo("procurement_manager", "procurement_officer", "admin"),
   validateBudgetIdParam,
   validateReleaseReservation,
   releaseReservation

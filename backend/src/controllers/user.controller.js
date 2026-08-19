@@ -16,6 +16,10 @@ const getUserById = async (req, res) => {
     try {
         const { id } = req.params;
 
+        if (req.user.role !== "admin" && req.user.userId !== id) {
+            return res.status(403).json({ message: "Access denied" });
+        }
+
         const user = await userService.getUserById(id);
 
         return res.status(200).json(user);
@@ -29,6 +33,10 @@ const getUserById = async (req, res) => {
 const updateUser = async (req, res) => {
     try {
         const { id } = req.params;
+
+        if (req.user.role !== "admin" && req.user.userId !== id) {
+            return res.status(403).json({ message: "Access denied" });
+        }
 
         const updatedUser = await userService.updateUser(id, req.body);
 

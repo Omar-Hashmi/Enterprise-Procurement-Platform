@@ -34,30 +34,30 @@ const objectId = Joi.string()
 const addressSchema = Joi.object({
   street: Joi.string().required(),
   city: Joi.string().required(),
-  state: Joi.string().optional(),
+  state: Joi.string().optional().allow("", null),
   country: Joi.string().required(),
-  postalCode: Joi.string().optional(),
+  postalCode: Joi.string().optional().allow("", null),
 });
 
 const contactPersonSchema = Joi.object({
   name: Joi.string().required(),
   email: Joi.string().email({ tlds: false }).required(),
   phone: Joi.string().required(),
-  designation: Joi.string().optional(),
+  designation: Joi.string().optional().allow("", null),
 });
 
 const companyInfoSchema = Joi.object({
   registrationNumber: Joi.string().required(),
-  website: Joi.string().uri().optional(),
-  industry: Joi.string().optional(),
+  website: Joi.string().uri().optional().allow("", null),
+  industry: Joi.string().optional().allow("", null),
   address: addressSchema.required(),
   contactPerson: contactPersonSchema.required(),
 });
 
 const taxInfoSchema = Joi.object({
   taxId: Joi.string().required(),
-  vatNumber: Joi.string().optional(),
-  taxDocumentUrl: Joi.string().uri().optional(),
+  vatNumber: Joi.string().optional().allow("", null),
+  taxDocumentUrl: Joi.string().uri().optional().allow("", null),
 });
 
 // ---- Vendor CRUD ----
@@ -66,14 +66,14 @@ const createVendorSchema = Joi.object({
   companyName: Joi.string().min(2).max(200).required(),
   companyInfo: companyInfoSchema.required(),
   taxInfo: taxInfoSchema.required(),
-  categories: Joi.array().items(objectId).optional(),
+  categories: Joi.array().items(Joi.alternatives().try(objectId, Joi.string())).optional(),
 });
 
 const updateVendorSchema = Joi.object({
   companyName: Joi.string().min(2).max(200).optional(),
   companyInfo: companyInfoSchema.optional(),
   taxInfo: taxInfoSchema.optional(),
-  categories: Joi.array().items(objectId).optional(),
+  categories: Joi.array().items(Joi.alternatives().try(objectId, Joi.string())).optional(),
 }).min(1);
 
 const updateVendorStatusSchema = Joi.object({
@@ -81,7 +81,7 @@ const updateVendorStatusSchema = Joi.object({
   reason: Joi.string().when("status", {
     is: "blacklisted",
     then: Joi.string().min(5).required(),
-    otherwise: Joi.string().optional(),
+    otherwise: Joi.string().optional().allow("", null),
   }),
 });
 
@@ -93,8 +93,8 @@ const listVendorsQuerySchema = Joi.object({
   page: Joi.number().integer().min(1).optional(),
   limit: Joi.number().integer().min(1).max(100).optional(),
   status: Joi.string().valid("pending", "active", "suspended", "blacklisted").optional(),
-  category: objectId.optional(),
-  search: Joi.string().max(100).optional(),
+  category: Joi.alternatives().try(objectId, Joi.string()).optional(),
+  search: Joi.string().max(100).optional().allow("", null),
 });
 
 // ---- Ratings ----
@@ -104,7 +104,7 @@ const rateVendorSchema = Joi.object({
   qualityScore: Joi.number().min(1).max(5).required(),
   costEfficiencyScore: Joi.number().min(1).max(5).required(),
   complianceScore: Joi.number().min(1).max(5).required(),
-  comments: Joi.string().max(1000).optional(),
+  comments: Joi.string().max(1000).optional().allow("", null),
 });
 
 // ---- Certifications ----
@@ -124,12 +124,13 @@ const addBankAccountSchema = Joi.object({
   bankName: Joi.string().required(),
   accountTitle: Joi.string().required(),
   accountNumber: Joi.string().required(),
-  iban: Joi.string().optional(),
-  swiftCode: Joi.string().optional(),
-  branchCode: Joi.string().optional(),
+  iban: Joi.string().optional().allow("", null),
+  swiftCode: Joi.string().optional().allow("", null),
+  branchCode: Joi.string().optional().allow("", null),
   currency: Joi.string().length(3).uppercase().optional(),
   isPrimary: Joi.boolean().optional(),
 });
+
 const bankAccountIdParamSchema = Joi.object({
   id: objectId.required(),
   accountId: objectId.required(),
@@ -139,7 +140,7 @@ const bankAccountIdParamSchema = Joi.object({
 
 const createVendorCategorySchema = Joi.object({
   name: Joi.string().min(2).max(100).required(),
-  description: Joi.string().max(500).optional(),
+  description: Joi.string().max(500).optional().allow("", null),
 });
 
 // ---- Exported middleware (what routes actually import) ----

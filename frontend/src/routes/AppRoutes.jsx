@@ -40,6 +40,127 @@ import EditBudget from '../pages/budget/EditBudget';
 import AppShell from '../components/layout/AppShell';
 import ProtectedRoute from './ProtectedRoute';
 import PublicRoute from './PublicRoute';
+import RoleRoute from './RoleRoute';
+import { USER_ROLES } from '../utils/constants';
+
+// Role Groups for Routes
+const ALL_AUTHENTICATED_ROLES = [
+  USER_ROLES.EMPLOYEE,
+  USER_ROLES.DEPARTMENT,
+  USER_ROLES.DEPARTMENT_MANAGER,
+  USER_ROLES.FINANCE_MANAGER,
+  USER_ROLES.FINANCE_OFFICER,
+  USER_ROLES.PROCUREMENT_MANAGER,
+  USER_ROLES.PROCUREMENT_OFFICER,
+  USER_ROLES.WAREHOUSE_STAFF,
+  USER_ROLES.CEO,
+  USER_ROLES.ADMIN,
+];
+
+const PR_VIEW_ROLES = [
+  USER_ROLES.EMPLOYEE,
+  USER_ROLES.DEPARTMENT,
+  USER_ROLES.DEPARTMENT_MANAGER,
+  USER_ROLES.FINANCE_MANAGER,
+  USER_ROLES.FINANCE_OFFICER,
+  USER_ROLES.PROCUREMENT_MANAGER,
+  USER_ROLES.PROCUREMENT_OFFICER,
+  USER_ROLES.CEO,
+  USER_ROLES.ADMIN,
+];
+
+const PR_CREATE_ROLES = [
+  USER_ROLES.EMPLOYEE,
+  USER_ROLES.DEPARTMENT,
+  USER_ROLES.DEPARTMENT_MANAGER,
+  USER_ROLES.ADMIN,
+];
+
+const APPROVAL_ROLES = [
+  USER_ROLES.DEPARTMENT,
+  USER_ROLES.DEPARTMENT_MANAGER,
+  USER_ROLES.FINANCE_MANAGER,
+  USER_ROLES.PROCUREMENT_MANAGER,
+  USER_ROLES.CEO,
+  USER_ROLES.ADMIN,
+];
+
+const PO_VIEW_ROLES = [
+  USER_ROLES.PROCUREMENT_MANAGER,
+  USER_ROLES.PROCUREMENT_OFFICER,
+  USER_ROLES.FINANCE_MANAGER,
+  USER_ROLES.CEO,
+  USER_ROLES.ADMIN,
+];
+
+const PO_CREATE_ROLES = [
+  USER_ROLES.PROCUREMENT_MANAGER,
+  USER_ROLES.PROCUREMENT_OFFICER,
+  USER_ROLES.ADMIN,
+];
+
+const VENDOR_VIEW_ROLES = [
+  USER_ROLES.PROCUREMENT_MANAGER,
+  USER_ROLES.PROCUREMENT_OFFICER,
+  USER_ROLES.FINANCE_MANAGER,
+  USER_ROLES.DEPARTMENT,
+  USER_ROLES.DEPARTMENT_MANAGER,
+  USER_ROLES.CEO,
+  USER_ROLES.ADMIN,
+];
+
+const VENDOR_MANAGE_ROLES = [
+  USER_ROLES.PROCUREMENT_MANAGER,
+  USER_ROLES.PROCUREMENT_OFFICER,
+  USER_ROLES.ADMIN,
+];
+
+const CONTRACT_VIEW_ROLES = [
+  USER_ROLES.PROCUREMENT_MANAGER,
+  USER_ROLES.PROCUREMENT_OFFICER,
+  USER_ROLES.FINANCE_MANAGER,
+  USER_ROLES.CEO,
+  USER_ROLES.ADMIN,
+];
+
+const CONTRACT_MANAGE_ROLES = [
+  USER_ROLES.PROCUREMENT_MANAGER,
+  USER_ROLES.PROCUREMENT_OFFICER,
+  USER_ROLES.ADMIN,
+];
+
+const INVENTORY_ROLES = [
+  USER_ROLES.WAREHOUSE_STAFF,
+  USER_ROLES.PROCUREMENT_MANAGER,
+  USER_ROLES.PROCUREMENT_OFFICER,
+  USER_ROLES.ADMIN,
+];
+
+const BUDGET_VIEW_ROLES = [
+  USER_ROLES.FINANCE_MANAGER,
+  USER_ROLES.FINANCE_OFFICER,
+  USER_ROLES.DEPARTMENT,
+  USER_ROLES.DEPARTMENT_MANAGER,
+  USER_ROLES.PROCUREMENT_MANAGER,
+  USER_ROLES.CEO,
+  USER_ROLES.ADMIN,
+];
+
+const BUDGET_MANAGE_ROLES = [
+  USER_ROLES.FINANCE_MANAGER,
+  USER_ROLES.FINANCE_OFFICER,
+  USER_ROLES.ADMIN,
+];
+
+const ANALYTICS_ROLES = [
+  USER_ROLES.PROCUREMENT_MANAGER,
+  USER_ROLES.FINANCE_MANAGER,
+  USER_ROLES.CEO,
+  USER_ROLES.ADMIN,
+  USER_ROLES.PROCUREMENT_OFFICER,
+];
+
+const AUDIT_LOG_ROLES = [USER_ROLES.ADMIN];
 
 export const AppRoutes = () => {
   return (
@@ -80,6 +201,7 @@ export const AppRoutes = () => {
 
       {/* Protected Routes */}
       <Route element={<ProtectedRoute />}>
+        {/* General Protected Routes */}
         <Route
           path="/dashboard"
           element={
@@ -96,166 +218,342 @@ export const AppRoutes = () => {
             </AppShell>
           }
         />
+
+        {/* Purchase Requests */}
         <Route
           path="/purchase-requests"
           element={
-            <AppShell>
-              <PurchaseRequestsPage />
-            </AppShell>
+            <RoleRoute allowedRoles={PR_VIEW_ROLES}>
+              <AppShell>
+                <PurchaseRequestsPage />
+              </AppShell>
+            </RoleRoute>
           }
         />
         <Route
           path="/purchase-requests/new"
           element={
-            <AppShell>
-              <CreatePurchaseRequestPage />
-            </AppShell>
+            <RoleRoute allowedRoles={PR_CREATE_ROLES}>
+              <AppShell>
+                <CreatePurchaseRequestPage />
+              </AppShell>
+            </RoleRoute>
           }
         />
         <Route
           path="/purchase-requests/:id"
           element={
-            <AppShell>
-              <PurchaseRequestDetailsPage />
-            </AppShell>
+            <RoleRoute allowedRoles={PR_VIEW_ROLES}>
+              <AppShell>
+                <PurchaseRequestDetailsPage />
+              </AppShell>
+            </RoleRoute>
           }
         />
+
+        {/* Approvals */}
         <Route
           path="/approvals"
           element={
-            <AppShell>
-              <ApprovalsPage />
-            </AppShell>
+            <RoleRoute allowedRoles={APPROVAL_ROLES}>
+              <AppShell>
+                <ApprovalsPage />
+              </AppShell>
+            </RoleRoute>
           }
         />
+
+        {/* Purchase Orders */}
         <Route
           path="/purchase-orders"
           element={
-            <AppShell>
-              <PurchaseOrdersPage />
-            </AppShell>
+            <RoleRoute allowedRoles={PO_VIEW_ROLES}>
+              <AppShell>
+                <PurchaseOrdersPage />
+              </AppShell>
+            </RoleRoute>
           }
         />
         <Route
           path="/purchase-orders/new"
           element={
-            <AppShell>
-              <CreatePurchaseOrderPage />
-            </AppShell>
+            <RoleRoute allowedRoles={PO_CREATE_ROLES}>
+              <AppShell>
+                <CreatePurchaseOrderPage />
+              </AppShell>
+            </RoleRoute>
           }
         />
         <Route
           path="/purchase-orders/:id"
           element={
-            <AppShell>
-              <PurchaseOrderDetailsPage />
-            </AppShell>
+            <RoleRoute allowedRoles={PO_VIEW_ROLES}>
+              <AppShell>
+                <PurchaseOrderDetailsPage />
+              </AppShell>
+            </RoleRoute>
           }
         />
+
+        {/* Vendors */}
         <Route
           path="/vendors"
           element={
-            <AppShell>
-              <VendorsPage />
-            </AppShell>
-          }
-        />
-        <Route
-          path="/analytics"
-          element={
-            <AppShell>
-              <AnalyticsDashboard />
-            </AppShell>
-          }
-        />
-        <Route
-          path="/contracts"
-          element={
-            <AppShell>
-              <ContractList />
-            </AppShell>
-          }
-        />
-        <Route path="/contracts/new" element={<AppShell><CreateContract /></AppShell>} />
-        <Route path="/contracts/expiring" element={<AppShell><ExpiringContracts /></AppShell>} />
-        <Route path="/contracts/:id/edit" element={<AppShell><EditContract /></AppShell>} />
-        <Route path="/contracts/:id" element={<AppShell><ContractDetails /></AppShell>} />
-        <Route
-          path="/inventory"
-          element={
-            <AppShell>
-              <InventoryDashboard />
-            </AppShell>
-          }
-        />
-        <Route path="/inventory/new" element={<AppShell><CreateInventory /></AppShell>} />
-        <Route path="/inventory/deliveries" element={<AppShell><DeliveryList /></AppShell>} />
-        <Route path="/inventory/deliveries/new" element={<AppShell><CreateDelivery /></AppShell>} />
-        <Route path="/inventory/deliveries/:id" element={<AppShell><DeliveryDetails /></AppShell>} />
-        <Route path="/inventory/warehouses" element={<AppShell><WarehouseList /></AppShell>} />
-        <Route path="/inventory/warehouses/new" element={<AppShell><CreateWarehouse /></AppShell>} />
-        <Route path="/inventory/warehouses/:id" element={<AppShell><WarehouseDetails /></AppShell>} />
-        <Route
-          path="/budgets"
-          element={
-            <AppShell>
-              <BudgetList />
-            </AppShell>
-          }
-        />
-        <Route path="/budgets/new" element={<AppShell><CreateBudget /></AppShell>} />
-        <Route path="/budgets/:id/edit" element={<AppShell><EditBudget /></AppShell>} />
-        <Route path="/budgets/:id" element={<AppShell><BudgetDetails /></AppShell>} />
-        {/* Debug route to quickly verify the app is rendering */}
-        <Route
-          path="/debug"
-          element={
-            <AppShell>
-              <div style={{ padding: 24 }}>
-                <h2>App running — debug route</h2>
-                <p>This confirms the React tree and routing are working.</p>
-              </div>
-            </AppShell>
+            <RoleRoute allowedRoles={VENDOR_VIEW_ROLES}>
+              <AppShell>
+                <VendorsPage />
+              </AppShell>
+            </RoleRoute>
           }
         />
         <Route
           path="/vendors/new"
           element={
-            <AppShell>
-              <CreateVendorPage />
-            </AppShell>
+            <RoleRoute allowedRoles={VENDOR_MANAGE_ROLES}>
+              <AppShell>
+                <CreateVendorPage />
+              </AppShell>
+            </RoleRoute>
           }
         />
         <Route
           path="/vendors/categories"
           element={
-            <AppShell>
-              <VendorCategories />
-            </AppShell>
+            <RoleRoute allowedRoles={VENDOR_VIEW_ROLES}>
+              <AppShell>
+                <VendorCategories />
+              </AppShell>
+            </RoleRoute>
           }
         />
         <Route
           path="/vendors/:id/edit"
           element={
-            <AppShell>
-              <EditVendor />
-            </AppShell>
+            <RoleRoute allowedRoles={VENDOR_MANAGE_ROLES}>
+              <AppShell>
+                <EditVendor />
+              </AppShell>
+            </RoleRoute>
+          }
+        />
+        <Route
+          path="/vendors/edit/:id"
+          element={
+            <RoleRoute allowedRoles={VENDOR_MANAGE_ROLES}>
+              <AppShell>
+                <EditVendor />
+              </AppShell>
+            </RoleRoute>
           }
         />
         <Route
           path="/vendors/:id"
           element={
-            <AppShell>
-              <VendorDetailsPage />
-            </AppShell>
+            <RoleRoute allowedRoles={VENDOR_VIEW_ROLES}>
+              <AppShell>
+                <VendorDetailsPage />
+              </AppShell>
+            </RoleRoute>
+          }
+        />
+
+        {/* Analytics */}
+        <Route
+          path="/analytics"
+          element={
+            <RoleRoute allowedRoles={ANALYTICS_ROLES}>
+              <AppShell>
+                <AnalyticsDashboard />
+              </AppShell>
+            </RoleRoute>
+          }
+        />
+
+        {/* Contracts */}
+        <Route
+          path="/contracts"
+          element={
+            <RoleRoute allowedRoles={CONTRACT_VIEW_ROLES}>
+              <AppShell>
+                <ContractList />
+              </AppShell>
+            </RoleRoute>
           }
         />
         <Route
+          path="/contracts/new"
+          element={
+            <RoleRoute allowedRoles={CONTRACT_MANAGE_ROLES}>
+              <AppShell>
+                <CreateContract />
+              </AppShell>
+            </RoleRoute>
+          }
+        />
+        <Route
+          path="/contracts/expiring"
+          element={
+            <RoleRoute allowedRoles={CONTRACT_VIEW_ROLES}>
+              <AppShell>
+                <ExpiringContracts />
+              </AppShell>
+            </RoleRoute>
+          }
+        />
+        <Route
+          path="/contracts/:id/edit"
+          element={
+            <RoleRoute allowedRoles={CONTRACT_MANAGE_ROLES}>
+              <AppShell>
+                <EditContract />
+              </AppShell>
+            </RoleRoute>
+          }
+        />
+        <Route
+          path="/contracts/:id"
+          element={
+            <RoleRoute allowedRoles={CONTRACT_VIEW_ROLES}>
+              <AppShell>
+                <ContractDetails />
+              </AppShell>
+            </RoleRoute>
+          }
+        />
+
+        {/* Inventory */}
+        <Route
+          path="/inventory"
+          element={
+            <RoleRoute allowedRoles={INVENTORY_ROLES}>
+              <AppShell>
+                <InventoryDashboard />
+              </AppShell>
+            </RoleRoute>
+          }
+        />
+        <Route
+          path="/inventory/new"
+          element={
+            <RoleRoute allowedRoles={INVENTORY_ROLES}>
+              <AppShell>
+                <CreateInventory />
+              </AppShell>
+            </RoleRoute>
+          }
+        />
+        <Route
+          path="/inventory/deliveries"
+          element={
+            <RoleRoute allowedRoles={INVENTORY_ROLES}>
+              <AppShell>
+                <DeliveryList />
+              </AppShell>
+            </RoleRoute>
+          }
+        />
+        <Route
+          path="/inventory/deliveries/new"
+          element={
+            <RoleRoute allowedRoles={INVENTORY_ROLES}>
+              <AppShell>
+                <CreateDelivery />
+              </AppShell>
+            </RoleRoute>
+          }
+        />
+        <Route
+          path="/inventory/deliveries/:id"
+          element={
+            <RoleRoute allowedRoles={INVENTORY_ROLES}>
+              <AppShell>
+                <DeliveryDetails />
+              </AppShell>
+            </RoleRoute>
+          }
+        />
+        <Route
+          path="/inventory/warehouses"
+          element={
+            <RoleRoute allowedRoles={INVENTORY_ROLES}>
+              <AppShell>
+                <WarehouseList />
+              </AppShell>
+            </RoleRoute>
+          }
+        />
+        <Route
+          path="/inventory/warehouses/new"
+          element={
+            <RoleRoute allowedRoles={INVENTORY_ROLES}>
+              <AppShell>
+                <CreateWarehouse />
+              </AppShell>
+            </RoleRoute>
+          }
+        />
+        <Route
+          path="/inventory/warehouses/:id"
+          element={
+            <RoleRoute allowedRoles={INVENTORY_ROLES}>
+              <AppShell>
+                <WarehouseDetails />
+              </AppShell>
+            </RoleRoute>
+          }
+        />
+
+        {/* Budgets */}
+        <Route
+          path="/budgets"
+          element={
+            <RoleRoute allowedRoles={BUDGET_VIEW_ROLES}>
+              <AppShell>
+                <BudgetList />
+              </AppShell>
+            </RoleRoute>
+          }
+        />
+        <Route
+          path="/budgets/new"
+          element={
+            <RoleRoute allowedRoles={BUDGET_MANAGE_ROLES}>
+              <AppShell>
+                <CreateBudget />
+              </AppShell>
+            </RoleRoute>
+          }
+        />
+        <Route
+          path="/budgets/:id/edit"
+          element={
+            <RoleRoute allowedRoles={BUDGET_MANAGE_ROLES}>
+              <AppShell>
+                <EditBudget />
+              </AppShell>
+            </RoleRoute>
+          }
+        />
+        <Route
+          path="/budgets/:id"
+          element={
+            <RoleRoute allowedRoles={BUDGET_VIEW_ROLES}>
+              <AppShell>
+                <BudgetDetails />
+              </AppShell>
+            </RoleRoute>
+          }
+        />
+
+        {/* Audit Logs */}
+        <Route
           path="/audit-logs"
           element={
-            <AppShell>
-              <AuditLogsPage />
-            </AppShell>
+            <RoleRoute allowedRoles={AUDIT_LOG_ROLES}>
+              <AppShell>
+                <AuditLogsPage />
+              </AppShell>
+            </RoleRoute>
           }
         />
       </Route>

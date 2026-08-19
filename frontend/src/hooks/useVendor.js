@@ -52,13 +52,24 @@ const normalizeVendor = (vendor) => {
   const taxInfo =
     vendor.taxInfo || {}
 
-  const categories = Array.isArray(
+  const rawCategories = Array.isArray(
     vendor.categories
   )
     ? vendor.categories
     : vendor.category
       ? [vendor.category]
       : []
+
+  const categories = rawCategories
+    .map((cat) => {
+      if (!cat) return ''
+      if (typeof cat === 'string') return cat.trim()
+      if (typeof cat === 'object') {
+        return cat.name || cat.title || cat.label || ''
+      }
+      return String(cat)
+    })
+    .filter(Boolean)
 
   const bankAccounts = Array.isArray(
     vendor.bankAccounts

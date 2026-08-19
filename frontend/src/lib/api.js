@@ -2,9 +2,9 @@ import axios from 'axios';
 import { useAuthStore } from '../stores/authStore';
 
 // Backend API URL
-// Your backend is running on port 3000.
+// Backend is running on port 5000.
 const baseURL =
-  import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000/api';
+  import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
 
 const apiClient = axios.create({
   baseURL,

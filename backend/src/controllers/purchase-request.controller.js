@@ -25,7 +25,7 @@ const createPurchaseRequest = async (req, res) => {
 const getAllPurchaseRequests = async (req, res) => {
     try {
         const purchaseRequests =
-            await purchaseRequestService.getAllPurchaseRequests();
+            await purchaseRequestService.getAllPurchaseRequests(req.user);
 
         return res.status(200).json(purchaseRequests);
     } catch (error) {

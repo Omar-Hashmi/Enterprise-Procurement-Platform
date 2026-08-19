@@ -69,7 +69,7 @@ export const VendorTable = ({
 
   const handleEdit = () => {
     if (selectedVendorId) {
-      navigate(`/vendors/edit/${selectedVendorId}`)
+      navigate(`/vendors/${selectedVendorId}/edit`)
     }
 
     handleMenuClose()
@@ -305,14 +305,24 @@ export const VendorTable = ({
                   vendor.companyName ||
                   'Unnamed Vendor'
 
-                const categories =
-                  Array.isArray(
-                    vendor.categories
-                  )
-                    ? vendor.categories
-                    : vendor.category
-                      ? [vendor.category]
-                      : []
+                const rawCategories = Array.isArray(
+                  vendor.categories
+                )
+                  ? vendor.categories
+                  : vendor.category
+                    ? [vendor.category]
+                    : []
+
+                const categories = rawCategories
+                  .map((cat) => {
+                    if (!cat) return ''
+                    if (typeof cat === 'string') return cat.trim()
+                    if (typeof cat === 'object') {
+                      return cat.name || cat.title || cat.label || ''
+                    }
+                    return String(cat)
+                  })
+                  .filter(Boolean)
 
                 const primaryCategory =
                   categories[0] ||
@@ -443,10 +453,10 @@ export const VendorTable = ({
                         {categories.length > 0 ? (
                           categories
                             .slice(0, 2)
-                            .map((category) => (
+                            .map((categoryName, idx) => (
                               <Chip
-                                key={category}
-                                label={category}
+                                key={`${vendorId || 'v'}-cat-${idx}`}
+                                label={categoryName}
                                 variant="outlined"
                                 size="small"
                                 sx={{

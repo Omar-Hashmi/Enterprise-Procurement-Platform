@@ -44,6 +44,7 @@ const userSchema = new mongoose.Schema(
                 "Finance",
                 "Procurement",
                 "Operations",
+                "Executive",
             ],
             required: true,
         },

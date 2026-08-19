@@ -6,10 +6,10 @@ const createPurchaseRequest = async (requestData) => {
     return purchaseRequest;
 };
 
-const getAllPurchaseRequests = async () => {
-    const purchaseRequests = await PurchaseRequest.find().populate(
+const getAllPurchaseRequests = async (filter = {}) => {
+    const purchaseRequests = await PurchaseRequest.find(filter).populate(
         "requestedBy",
-        "fullName email role"
+        "fullName email role department"
     );
 
     return purchaseRequests;
@@ -18,7 +18,7 @@ const getAllPurchaseRequests = async () => {
 const getPurchaseRequestById = async (id) => {
     const purchaseRequest = await PurchaseRequest.findById(id).populate(
         "requestedBy",
-        "fullName email role"
+        "fullName email role department"
     );
 
     return purchaseRequest;

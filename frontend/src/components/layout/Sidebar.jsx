@@ -31,13 +31,66 @@ export const Sidebar = ({ mobileOpen = false, onMobileClose, drawerWidth = 260 }
   const navigate = useNavigate();
   const user = useAuthStore((state) => state.user);
 
-  const userRole = user?.role || '';
+  const userRole = user?.role ? String(user.role).toLowerCase() : '';
   const isAdmin = userRole === USER_ROLES.ADMIN;
-  const canAccessApprovals = [...APPROVAL_ROLES, USER_ROLES.ADMIN].includes(userRole);
+
+  const canAccessApprovals = [
+    USER_ROLES.DEPARTMENT,
+    USER_ROLES.DEPARTMENT_MANAGER,
+    USER_ROLES.FINANCE_MANAGER,
+    USER_ROLES.PROCUREMENT_MANAGER,
+    USER_ROLES.CEO,
+    USER_ROLES.ADMIN,
+  ].includes(userRole);
+
   const canAccessPO = [
     USER_ROLES.ADMIN,
     USER_ROLES.PROCUREMENT_MANAGER,
+    USER_ROLES.PROCUREMENT_OFFICER,
     USER_ROLES.FINANCE_MANAGER,
+    USER_ROLES.CEO,
+  ].includes(userRole);
+
+  const canAccessVendors = [
+    USER_ROLES.ADMIN,
+    USER_ROLES.PROCUREMENT_MANAGER,
+    USER_ROLES.PROCUREMENT_OFFICER,
+    USER_ROLES.FINANCE_MANAGER,
+    USER_ROLES.DEPARTMENT,
+    USER_ROLES.DEPARTMENT_MANAGER,
+    USER_ROLES.CEO,
+  ].includes(userRole);
+
+  const canAccessContracts = [
+    USER_ROLES.ADMIN,
+    USER_ROLES.PROCUREMENT_MANAGER,
+    USER_ROLES.PROCUREMENT_OFFICER,
+    USER_ROLES.FINANCE_MANAGER,
+    USER_ROLES.CEO,
+  ].includes(userRole);
+
+  const canAccessInventory = [
+    USER_ROLES.ADMIN,
+    USER_ROLES.WAREHOUSE_STAFF,
+    USER_ROLES.PROCUREMENT_MANAGER,
+    USER_ROLES.PROCUREMENT_OFFICER,
+  ].includes(userRole);
+
+  const canAccessBudgets = [
+    USER_ROLES.ADMIN,
+    USER_ROLES.FINANCE_MANAGER,
+    USER_ROLES.FINANCE_OFFICER,
+    USER_ROLES.DEPARTMENT,
+    USER_ROLES.DEPARTMENT_MANAGER,
+    USER_ROLES.PROCUREMENT_MANAGER,
+    USER_ROLES.CEO,
+  ].includes(userRole);
+
+  const canAccessAnalytics = [
+    USER_ROLES.ADMIN,
+    USER_ROLES.PROCUREMENT_MANAGER,
+    USER_ROLES.FINANCE_MANAGER,
+    USER_ROLES.CEO,
     USER_ROLES.PROCUREMENT_OFFICER,
   ].includes(userRole);
 
@@ -70,31 +123,51 @@ export const Sidebar = ({ mobileOpen = false, onMobileClose, drawerWidth = 260 }
           },
         ]
       : []),
-    {
-      label: 'Vendors',
-      path: '/vendors',
-      icon: <StorefrontOutlinedIcon />,
-    },
-    {
-      label: 'Analytics',
-      path: '/analytics',
-      icon: <BarChartOutlinedIcon />,
-    },
-    {
-      label: 'Contracts',
-      path: '/contracts',
-      icon: <DescriptionOutlinedIcon />,
-    },
-    {
-      label: 'Inventory',
-      path: '/inventory',
-      icon: <Inventory2OutlinedIcon />,
-    },
-    {
-      label: 'Budgets',
-      path: '/budgets',
-      icon: <AccountBalanceOutlinedIcon />,
-    },
+    ...(canAccessVendors
+      ? [
+          {
+            label: 'Vendors',
+            path: '/vendors',
+            icon: <StorefrontOutlinedIcon />,
+          },
+        ]
+      : []),
+    ...(canAccessAnalytics
+      ? [
+          {
+            label: 'Analytics',
+            path: '/analytics',
+            icon: <BarChartOutlinedIcon />,
+          },
+        ]
+      : []),
+    ...(canAccessContracts
+      ? [
+          {
+            label: 'Contracts',
+            path: '/contracts',
+            icon: <DescriptionOutlinedIcon />,
+          },
+        ]
+      : []),
+    ...(canAccessInventory
+      ? [
+          {
+            label: 'Inventory',
+            path: '/inventory',
+            icon: <Inventory2OutlinedIcon />,
+          },
+        ]
+      : []),
+    ...(canAccessBudgets
+      ? [
+          {
+            label: 'Budgets',
+            path: '/budgets',
+            icon: <AccountBalanceOutlinedIcon />,
+          },
+        ]
+      : []),
     ...(isAdmin
       ? [
           {

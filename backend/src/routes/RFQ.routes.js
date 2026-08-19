@@ -36,22 +36,22 @@ const router = Router();
 // All RFQ routes require an authenticated session
 router.use(protect);
 
-router.get("/status-summary", restrictTo("procurement_officer", "admin"), getRFQStatusSummary);
+router.get("/status-summary", restrictTo("procurement_manager", "procurement_officer", "admin"), getRFQStatusSummary);
 
 router
   .route("/")
   .get(validateListRFQsQuery, getRFQs)
-  .post(restrictTo("procurement_officer", "admin"), validateCreateRFQ, createRFQ);
+  .post(restrictTo("procurement_manager", "procurement_officer", "admin"), validateCreateRFQ, createRFQ);
 
 router
   .route("/:id")
   .get(validateRFQIdParam, getRFQById)
-  .patch(restrictTo("procurement_officer", "admin"), validateRFQIdParam, validateUpdateRFQ, updateRFQ)
-  .delete(restrictTo("procurement_officer", "admin"), validateRFQIdParam, deleteRFQ);
+  .patch(restrictTo("procurement_manager", "procurement_officer", "admin"), validateRFQIdParam, validateUpdateRFQ, updateRFQ)
+  .delete(restrictTo("procurement_manager", "procurement_officer", "admin"), validateRFQIdParam, deleteRFQ);
 
 router.post(
   "/:id/invite-vendors",
-  restrictTo("procurement_officer", "admin"),
+  restrictTo("procurement_manager", "procurement_officer", "admin"),
   validateRFQIdParam,
   validateInviteVendors,
   inviteVendors
@@ -59,7 +59,7 @@ router.post(
 
 router.patch(
   "/:id/publish",
-  restrictTo("procurement_officer", "admin"),
+  restrictTo("procurement_manager", "procurement_officer", "admin"),
   validateRFQIdParam,
   publishRFQ
 );
@@ -75,14 +75,14 @@ router.post(
 
 router.get(
   "/:id/quotations/compare",
-  restrictTo("procurement_officer", "admin"),
+  restrictTo("procurement_manager", "procurement_officer", "admin"),
   validateRFQIdParam,
   compareQuotations
 );
 
 router.patch(
   "/:id/quotations/:quotationId/evaluate",
-  restrictTo("procurement_officer", "admin"),
+  restrictTo("procurement_manager", "procurement_officer", "admin"),
   validateQuotationIdParam,
   validateEvaluateQuotation,
   evaluateQuotation
@@ -90,7 +90,7 @@ router.patch(
 
 router.patch(
   "/:id/quotations/:quotationId/select",
-  restrictTo("procurement_officer", "admin"),
+  restrictTo("procurement_manager", "procurement_officer", "admin"),
   validateQuotationIdParam,
   validateSelectVendor,
   selectVendor
@@ -98,14 +98,14 @@ router.patch(
 
 router.patch(
   "/:id/close",
-  restrictTo("procurement_officer", "admin"),
+  restrictTo("procurement_manager", "procurement_officer", "admin"),
   validateRFQIdParam,
   closeRFQ
 );
 
 router.patch(
   "/:id/cancel",
-  restrictTo("procurement_officer", "admin"),
+  restrictTo("procurement_manager", "procurement_officer", "admin"),
   validateRFQIdParam,
   cancelRFQ
 );

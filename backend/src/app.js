@@ -81,9 +81,11 @@ app.use((err, req, res, next) => {
     }
 
     if (err) {
-        return res.status(400).json({
-            message: "Upload failed",
-            error: err.message,
+        const statusCode = err.statusCode || err.status || 500;
+        const message = err.message || "An unexpected error occurred.";
+        return res.status(statusCode).json({
+            message,
+            error: process.env.NODE_ENV === "development" ? err.message : undefined,
         });
     }
 

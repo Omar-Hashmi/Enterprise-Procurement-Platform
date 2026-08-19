@@ -44,23 +44,31 @@ router
   .route("/categories")
   .get(getVendorCategories)
   .post(
-    restrictTo("procurement_officer", "admin"),
+    restrictTo("procurement_manager", "procurement_officer", "admin"),
     validateCreateVendorCategory,
     createVendorCategory
   );
 
-router.get("/status-summary", restrictTo("procurement_officer", "admin"), getVendorStatusSummary);
+router.get(
+  "/status-summary",
+  restrictTo("procurement_manager", "procurement_officer", "finance_manager", "department", "department_manager", "ceo", "admin"),
+  getVendorStatusSummary
+);
 
 router
   .route("/")
   .get(validateListVendorsQuery, getVendors)
-  .post(restrictTo("procurement_officer", "admin"), validateCreateVendor, createVendor);
+  .post(
+    restrictTo("procurement_manager", "procurement_officer", "admin"),
+    validateCreateVendor,
+    createVendor
+  );
 
 router
   .route("/:id")
   .get(validateVendorIdParam, getVendorById)
   .patch(
-    restrictTo("procurement_officer", "admin"),
+    restrictTo("procurement_manager", "procurement_officer", "admin"),
     validateVendorIdParam,
     validateUpdateVendor,
     updateVendor
@@ -69,7 +77,7 @@ router
 
 router.patch(
   "/:id/status",
-  restrictTo("procurement_officer", "admin"),
+  restrictTo("procurement_manager", "procurement_officer", "admin"),
   validateVendorIdParam,
   validateUpdateVendorStatus,
   updateVendorStatus
@@ -77,18 +85,34 @@ router.patch(
 
 router.post(
   "/:id/ratings",
-  restrictTo("procurement_officer", "department_manager", "admin"),
+  restrictTo("procurement_manager", "procurement_officer", "department", "department_manager", "admin"),
   validateVendorIdParam,
   validateRateVendor,
   rateVendor
 );
-router.patch("/:id/bank-accounts/:accountId", restrictTo("procurement_officer", "admin"), validateBankAccountIdParam, validateUpdateBankAccount, updateBankAccount);
-router.delete("/:id/bank-accounts/:accountId", restrictTo("procurement_officer", "admin"), validateBankAccountIdParam, deleteBankAccount);
-router.patch("/:id/bank-accounts/:accountId/primary", restrictTo("procurement_officer", "admin"), validateBankAccountIdParam, setPrimaryBankAccount);
+router.patch(
+  "/:id/bank-accounts/:accountId",
+  restrictTo("procurement_manager", "procurement_officer", "admin"),
+  validateBankAccountIdParam,
+  validateUpdateBankAccount,
+  updateBankAccount
+);
+router.delete(
+  "/:id/bank-accounts/:accountId",
+  restrictTo("procurement_manager", "procurement_officer", "admin"),
+  validateBankAccountIdParam,
+  deleteBankAccount
+);
+router.patch(
+  "/:id/bank-accounts/:accountId/primary",
+  restrictTo("procurement_manager", "procurement_officer", "admin"),
+  validateBankAccountIdParam,
+  setPrimaryBankAccount
+);
 
 router.post(
   "/:id/certifications",
-  restrictTo("procurement_officer", "admin"),
+  restrictTo("procurement_manager", "procurement_officer", "admin"),
   validateVendorIdParam,
   validateAddCertification,
   addCertification
@@ -96,7 +120,7 @@ router.post(
 
 router.post(
   "/:id/bank-accounts",
-  restrictTo("procurement_officer", "admin"),
+  restrictTo("procurement_manager", "procurement_officer", "admin"),
   validateVendorIdParam,
   validateAddBankAccount,
   addBankAccount

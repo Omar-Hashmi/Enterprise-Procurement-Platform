@@ -460,4 +460,4 @@ If you found this project useful or learned something from it:
 This project is licensed under the **MIT License**.
 You are free to use, modify, and distribute this project in accordance with the license terms. See [LICENSE](./LICENSE) for details.
 
-<p align="center">Made with ❤️ by Omar Hashmi</p>
+<p align="center">Made with Collaboration by Omar Hashmi & Umar Khayyam</p>
